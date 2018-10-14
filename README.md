@@ -15,7 +15,7 @@ HOW TO USE :
 - then render with : Renderer.render<_sprite><_anim>(int first, int amount);
 - to render everything use : Renderer.render<_sprite><_anim>(0, get_max<_sprite><_anim>())
 
-            _buttons_
+			_buttons_
 - to create a button use : Button(&Renderer,glm::vec2 position, int width, int height, const char* label, bool next);
 - Renderer.load() & Renderer.prepare() are nessessary
 - to render use : Button.render(int mouse_position_x, int mouse_position_y, bool mouseclick);
