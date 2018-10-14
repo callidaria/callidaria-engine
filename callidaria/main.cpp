@@ -1,6 +1,7 @@
 #include <iostream>
 #include "frame.h"
 #include "renderer.h"
+#include "button.h"
 
 int main(int argc, char** argv)
 {
@@ -8,7 +9,7 @@ int main(int argc, char** argv)
 
 	//TODO: still no code here? ...write something, i'm bored.
 
-	SDL_Event fe; bool ka[1024] = { false };
+	SDL_Event fe; bool ka[1024] = { false }; int mx, my; bool mc = false;
 	while (true) {
 		frame.vsync(60);
 		if(SDL_PollEvent(&fe)) {
@@ -16,6 +17,7 @@ int main(int argc, char** argv)
 			if (fe.key.keysym.sym==SDLK_ESCAPE) break; //optional
 			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym<1024) ka[fe.key.keysym.sym] = true;
 			if (fe.type==SDL_KEYUP&&fe.key.keysym.sym<1024) ka[fe.key.keysym.sym] = false;
+			SDL_GetMouseState(&mx,&my);
 		}
 		frame.clear(0.2f, 0.3f, 0.8f);
 

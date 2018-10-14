@@ -47,6 +47,12 @@ public:
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(i*6*sizeof(int)));
 		}
 	}
+	void render_state(int s, int i)
+	{
+		int ls = sl.size();
+		glBindTexture(GL_TEXTURE_2D,al.at(s).tex[i]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((s+ls)*6*sizeof(int)));
+	}
 	void render_anim(int b, int e)
 	{
 		int ls = sl.size();
