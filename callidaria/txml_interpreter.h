@@ -19,7 +19,8 @@ public:
 			if (res==EOF) break;
 			else {
 				std::string sproc(lh);
-				if (sproc=="{") proc = proc->get_next(proc->get_next_size()-1);
+				if (sproc=="{") proc = 
+					proc->get_next(proc->get_next_size()-1);
 				else if (sproc=="}") proc = proc->get_prev();
 				else proc->add_next(sproc);
 			}

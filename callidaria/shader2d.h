@@ -4,12 +4,14 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-class Shader
+class Shader2D
 {
 public:
-	Shader() { }
+	Shader2D() { }
 	void compile()
 	{
+		std::cout<<"\n\033[1;4;37;40mcreating 2D shader\033[0m\n\n";
+		std::cout<<"\033[34mreading 2D vertex & fragment\n";
 		const char* vertexSource = "#version 130\n\r"
 			"in vec2 position;"
 			"in vec2 texCoords;"
@@ -61,33 +63,43 @@ public:
 			"		outColour = blurt * alpha;"
 			"	}"
 			"}";
+		std::cout<<"compiling 2D shaders\n";
 		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexSource, NULL);
-		glCompileShader(vertexShader);
-		int status; glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-		if (status != GL_TRUE) { char buffer[512]; glGetShaderInfoLog(vertexShader, 512, NULL, buffer); std::cout << buffer << std::endl; }
-		else std::cout << "vertex shader compiled successfully" << std::endl;
+		glCompileShader(vertexShader); int status;
+		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+		if (status != GL_TRUE) {
+			char buffer[512];
+			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+			std::cout << "\033[1;31m2D vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
+		else std::cout << "\033[1;32minstance vertex shader compiled successfully\033[0m\n";
 
-		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 		glCompileShader(fragmentShader);
 		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-		if (status != GL_TRUE) { char buffer[512]; glGetShaderInfoLog(fragmentShader, 512, NULL, buffer); std::cout << buffer << std::endl; }
-		else std::cout << "fragment shader compiled successfully" << std::endl;
+		if (status != GL_TRUE) {
+			char buffer[512];
+			glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+			std::cout << "\033[1;31m2D fragment shader error\033[36m\n" << buffer << "\033[0m\n"; }
+		else std::cout << "\033[1;32m2D fragment shader compiled successfully\033[0m\n" << std::endl;
 
 		shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, vertexShader); glAttachShader(shaderProgram, fragmentShader);
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragmentShader);
 		glBindFragDataLocation(shaderProgram, 0, "outColour");
 		glLinkProgram(shaderProgram);
 		enable();
 
 		int posAttrib = glGetAttribLocation(shaderProgram, "position");
 		glEnableVertexAttribArray(posAttrib);
-		glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+		glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,
+				4*sizeof(float),0);
 
 		int texAttrib = glGetAttribLocation(shaderProgram, "texCoords");
 		glEnableVertexAttribArray(texAttrib);
-		glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2*sizeof(float)));
+		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,
+				4*sizeof(float),(void*)(2*sizeof(float)));
 
 		modelUni = glGetUniformLocation(shaderProgram, "model");
 	}

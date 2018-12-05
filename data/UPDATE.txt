@@ -1,0 +1,7 @@
+v1.0.0
+- first "official" release of the callidaria graphics engine
+- instance rendering now supported for better performance in some cases
+- source code now much tidier and easier to read
+- first optimization of the 2D rendering code
+- acceleration bug fixed with vsync function
+- shader compiling bug fixed with context version definition

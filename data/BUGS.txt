@@ -1,0 +1,4 @@
+			known bugs
+
+- with sprite or state rendering, parts of the buttons can appear as well
+	cause found : no seperate vbo upload of buttons and sprites
