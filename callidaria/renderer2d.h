@@ -77,9 +77,14 @@ public:
 	int get_max_sprite() { return sl.size(); }
 	int get_max_anim() { return al.size(); }
 	void upload_model(glm::mat4 m)
-	{ glUniformMatrix4fv(s2d.modelUni, 1, GL_FALSE, value_ptr(m)); }
+	{ glUniformMatrix4fv(s2d.modelUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_view(glm::mat4 m)
+	{ glUniformMatrix4fv(s2d.viewUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_proj(glm::mat4 m)
+	{ glUniformMatrix4fv(s2d.projUni, 1, GL_FALSE, glm::value_ptr(m)); }
 private:
 	unsigned int vao, vbo, ebo;
+public:
 	Shader2D s2d;
 	std::vector<Sprite> sl; std::vector<Anim> al;
 };

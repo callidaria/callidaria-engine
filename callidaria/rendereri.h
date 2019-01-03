@@ -45,9 +45,17 @@ public:
 				il.at(i).o,GL_DYNAMIC_DRAW);
 		glDrawArraysInstanced(GL_TRIANGLES, i*6, i*6+6, amt);
 	}
-	void set_offset(int i, int j, glm::vec2 o) { il.at(i).o[j] = o; }
+	void set_offset(int i, int j, glm::vec2 o)
+	{ il.at(i).o[j] = o; }
+	void upload_model(glm::mat4 m)
+	{ glUniformMatrix4fv(sI.modelUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_view(glm::mat4 m)
+	{ glUniformMatrix4fv(sI.viewUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_proj(glm::mat4 m)
+	{ glUniformMatrix4fv(sI.projUni, 1, GL_FALSE, glm::value_ptr(m)); }
 private:
 	unsigned int vao, vbo, ibo;
-	ShaderI sI;
 	std::vector<Instance> il;
+public:
+	ShaderI sI;
 };

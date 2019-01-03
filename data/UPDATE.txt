@@ -1,3 +1,10 @@
+v1.1.0
+- 2D camera class now included
+- arbitrary transformation of sprites and animations
+- efficient coordinate system translation with matrices setup
+- relative sprite setup removed for better loading performance
+- random window crashes when mouse cursor reaches negative values fixed
+
 v1.0.0
 - first "official" release of the callidaria graphics engine
 - instance rendering now supported for better performance in some cases

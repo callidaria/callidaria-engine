@@ -17,10 +17,13 @@ public:
 			"in vec2 texCoords;"
 			"in vec2 offset;"
 			"out vec2 TexCoords;"
+			"uniform mat4 model = mat4(1.0);"
+			"uniform mat4 view = mat4(1.0);"
+			"uniform mat4 proj = mat4(1.0);"
 			"void main()"
 			"{"
 			"	TexCoords = texCoords;"
-			"	gl_Position = vec4(position+offset, 0.0, 1.0);"
+			"	gl_Position = proj * view * model * vec4(position+offset, 0.0, 1.0);"
 			"}";
 		const char* fragmentSource = "#version 330\n\r"
 			"in vec2 TexCoords;"
@@ -78,6 +81,10 @@ public:
 		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,
 				2*sizeof(float),0);
 		glVertexAttribDivisor(offsetAttrib,1);
+
+		modelUni = glGetUniformLocation(shaderProgram, "model");
+		viewUni = glGetUniformLocation(shaderProgram, "view");
+		projUni = glGetUniformLocation(shaderProgram, "proj");
 	}
 	void enable()
 	{
@@ -85,4 +92,6 @@ public:
 	}
 public:
 	unsigned int shaderProgram;
+public:
+	int modelUni, viewUni, projUni;
 };

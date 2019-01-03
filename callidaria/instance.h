@@ -13,9 +13,6 @@ public:
 	Instance(glm::vec2 p, float w, float h, const char* t)
 		: tp(t)
 	{
-		p.x = p.x / 640.0f - 1; p.y = p.y / 360.0f - 2 + 1;
-		w /= 640.0f; h /= 360.0f;
-
 		v[0] = p.x+w; v[1] = p.y+h; v[2] = 1.0f; v[3] = 0.0f;
 		v[4] = p.x; v[5] = p.y; v[6] = 0.0f; v[7] = 1.0f;
 		v[8] = p.x+w; v[9] = p.y; v[10] = 1.0f; v[11] = 1.0f;

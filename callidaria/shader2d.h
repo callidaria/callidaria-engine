@@ -18,13 +18,17 @@ public:
 			"out vec2 TexCoords;"
 			"out vec2 blurTexCoords[11];"
 			"uniform mat4 model = mat4(1.0);"
+			"uniform mat4 view = mat4(1.0);"
+			"uniform mat4 proj = mat4(1.0);"
 			"uniform bool blur = bool(false);"
 			"uniform vec2 bsize = vec2(640, 360);"
 			"uniform vec2 ratiodiv = vec2(1, 1);"
+			"uniform int ssdiv = 1;"
+			"uniform int ssidx = 1;"
 			"void main()"
 			"{"
-			"	TexCoords = texCoords;"
-			"	gl_Position = model * vec4(position, 0.0, 1.0);"
+			"	TexCoords = texCoords / ssdiv;"
+			"	gl_Position = proj * view * model * vec4(position, 0.0, 1.0);"
 			"	if (blur) {"
 			"		vec2 ctrTexCoords = vec2(position.x*(0.5/ratiodiv.x)+(0.5/ratiodiv.x),-position.y*(0.5/ratiodiv.y)+(0.5/ratiodiv.y));"
 			"		float pixelSizeW = 1.0 / bsize.x; float pixelSizeH = 1.0 / bsize.y;"
@@ -72,7 +76,7 @@ public:
 			char buffer[512];
 			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
 			std::cout << "\033[1;31m2D vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
-		else std::cout << "\033[1;32minstance vertex shader compiled successfully\033[0m\n";
+		else std::cout << "\033[1;32m2D vertex shader compiled successfully\033[0m\n";
 
 		unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
@@ -102,6 +106,8 @@ public:
 				4*sizeof(float),(void*)(2*sizeof(float)));
 
 		modelUni = glGetUniformLocation(shaderProgram, "model");
+		viewUni = glGetUniformLocation(shaderProgram, "view");
+		projUni = glGetUniformLocation(shaderProgram, "proj");
 	}
 	void enable()
 	{
@@ -110,5 +116,5 @@ public:
 private:
 	unsigned int shaderProgram;
 public:
-	int modelUni;
+	int modelUni, viewUni, projUni;
 };
