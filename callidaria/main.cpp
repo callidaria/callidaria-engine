@@ -10,19 +10,21 @@ int main(int argc, char** argv)
 {
 	Frame frame = Frame();
 	Renderer2D r2d = Renderer2D(); RendererI ri = RendererI();
-
-    //TODO : setup
     
-	r2d.load(); ri.load();
-	
-	Camera2D cam2d = Camera2D(); cam2d.load(&r2d,&ri);
+    //TODO: setup
+    
+	Camera2D cam2d = Camera2D();
+	r2d.load_wcam(&cam2d); ri.load_wcam(&cam2d);
 
 	std::cout<<"\n\033[36mrunning...\n";
+	glm::vec2 tpos=glm::vec2(0);glm::vec2 tscl=glm::vec2(1);float trot=0.0f;
 	SDL_Event fe; bool ka[1024] = { false }; int mx, my; bool mc = false;
-	while (true) {
+	bool run=true; while (run) {
 		frame.vsync(60);
-		if(SDL_PollEvent(&fe)) {
-			if (fe.type==SDL_QUIT) break;
+		while(SDL_PollEvent(&fe)) {
+			if (fe.type==SDL_QUIT) run=false;
+			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym==SDLK_ESCAPE)
+				run=false;
 			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym<1024)
 				ka[fe.key.keysym.sym] = true;
 			if (fe.type==SDL_KEYUP&&fe.key.keysym.sym<1024)
@@ -31,10 +33,10 @@ int main(int argc, char** argv)
 		}
 		frame.clear(0.2f, 0.3f, 0.8f);
         
-        //TODO : loopcode
+        //TODO: loopcode
 
 		frame.update();
 	}
-	frame.vanish();
+	frame.vanish(); //cool method name
 	return 0;
 }

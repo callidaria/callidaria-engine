@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "shaderi.h"
 #include "instance.h"
+#include "camera2d.h"
 
 class RendererI
 {
@@ -35,7 +36,12 @@ public:
 		std::cout<<"\033[34mtexturing instanced objects\n";
 		for (int i = 0; i < il.size(); i++) il.at(i).texture();
 	}
-	void load() {load_vertex();sI.compile(ibo);load_texture();}
+	void load() { load_vertex();sI.compile(ibo);load_texture(); }
+	void load_wcam(Camera2D* c)
+	{
+		load_vertex(); sI.compile(ibo); load_texture();
+		upload_view(c->view2D); upload_proj(c->proj2D);
+	}
 	void prepare() { sI.enable(); glBindVertexArray(vao); }
 	void render(int i, int amt)
 	{

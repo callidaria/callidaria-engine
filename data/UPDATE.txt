@@ -1,11 +1,17 @@
-v1.1.0
+v1.1.1          4.1.2019
+- main loop runs now with bool var instead of breakable true
+- input delay when mouse and keyboard are used at the same time fixed
+- camera matrix upload performance issues fixed
+- camera now only stores public matrices for single/multiple upload
+
+v1.1.0          3.1.2019
 - 2D camera class now included
 - arbitrary transformation of sprites and animations
 - efficient coordinate system translation with matrices setup
 - relative sprite setup removed for better loading performance
 - random window crashes when mouse cursor reaches negative values fixed
 
-v1.0.0
+v1.0.0          5.12.2018
 - first "official" release of the callidaria graphics engine
 - instance rendering now supported for better performance in some cases
 - source code now much tidier and easier to read

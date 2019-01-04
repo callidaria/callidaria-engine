@@ -7,6 +7,7 @@
 #include "shader2d.h"
 #include "sprite.h"
 #include "anim.h"
+#include "camera2d.h"
 
 class Renderer2D
 {
@@ -49,6 +50,11 @@ public:
 		for (int i = 0; i < al.size(); i++) al.at(i).texture();
 	}
 	void load() { load_vertex(); s2d.compile(); load_texture(); }
+	void load_wcam(Camera2D* c)
+	{ 
+		load_vertex(); s2d.compile(); load_texture();
+		upload_view(c->view2D); upload_proj(c->proj2D);
+	}
 	void prepare() { s2d.enable(); glBindVertexArray(vao); }
 	void render_sprite(int b, int e)
 	{

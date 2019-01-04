@@ -35,4 +35,5 @@ the example_main.cpp file shows an compilable setup and rendering example code
 
             _the camera_
 - to setup the camera run the constructor : Camera2D cam2d = Camera2D();
-- after 2D and instance shaders are compiled run : Camera2D.load(Renderer2D*,RendererI*);
+- to upload the camera in setup : Renderer2D.load_wcam(Camera2D*); RendererI.load_wcam(Camera2D*);
+- to upload the camera while shader is active : <Renderer2D><RendererI>.upload_view(Camera2D.view2D); <Renderer2D><RendererI>.upload_proj(Camera2D.proj2D);
