@@ -1,10 +1,10 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include "frame.h"
-#include "renderer2d.h"
-#include "button.h"
-#include "rendereri.h"
-#include "camera2d.h"
+#include "engine/frame.h"
+#include "engine/renderer2d.h"
+#include "engine/button.h"
+#include "engine/rendereri.h"
+#include "engine/camera2d.h"
 
 int main(int argc, char** argv)
 {
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 		frame.clear(0.2f, 0.3f, 0.8f);
 
 		//input test
-		if(ka[SDLK_e])trot+=2.0f;else if(ka[SDLK_q])trot-=2.0f;
+		if(ka[SDLK_e])trot-=2.0f;else if(ka[SDLK_q])trot+=2.0f;
 		if(ka[SDLK_w])tpos.y+=2;else if(ka[SDLK_s])tpos.y-=2;
 		if(ka[SDLK_a])tpos.x-=2;else if(ka[SDLK_d])tpos.x+=2;
 		if(ka[SDLK_i])tscl.y+=0.01f;else if(ka[SDLK_k])tscl.y-=0.01f;
@@ -69,7 +69,8 @@ int main(int argc, char** argv)
 		r2d.render_sprite(0,1);
 
 		//anim test
-		r2d.upload_model(glm::mat4(1.0f));r2d.render_anim(0,1);
+		r2d.upload_model(glm::mat4(1.0f));
+		r2d.render_anim(0,1);
 
 		//button test
 		b1.render(mx,my,mc); b2.render(mx,my,mc);
@@ -79,6 +80,6 @@ int main(int argc, char** argv)
 
 		frame.update();
 	}
-	frame.vanish(); //cool method name
+	frame.vanish();
 	return 0;
 }

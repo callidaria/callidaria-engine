@@ -1,3 +1,9 @@
+v1.1.2          15.1.2019
+- extern shader editing
+- folder hierarchy to update the engine easier while program is in development
+- massive code reduction in shader files
+- segmentation fault when running on some laptops fixed !!!
+
 v1.1.1          4.1.2019
 - main loop runs now with bool var instead of breakable true
 - input delay when mouse and keyboard are used at the same time fixed
