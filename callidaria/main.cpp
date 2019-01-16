@@ -1,10 +1,10 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include "engine/frame.h"
-#include "engine/renderer2d.h"
-#include "engine/button.h"
-#include "engine/rendereri.h"
-#include "engine/camera2d.h"
+#include "cld_lin/frame.h"
+#include "cld_lin/renderer2d.h"
+#include "cld_lin/button.h"
+#include "cld_lin/rendereri.h"
+#include "cld_lin/camera2d.h"
 
 int main(int argc, char** argv)
 {
@@ -13,11 +13,11 @@ int main(int argc, char** argv)
 
 	//TODO: setup
 
-	//camera and upload
 	Camera2D cam2d = Camera2D();
 	r2d.load_wcam(&cam2d); ri.load_wcam(&cam2d);
 
 	std::cout<<"\n\033[36mrunning...\n";
+	glm::vec2 tpos=glm::vec2(0);glm::vec2 tscl=glm::vec2(1);float trot=0.0f;
 	SDL_Event fe; bool ka[1024] = { false }; int mx, my; bool mc = false;
 	bool run=true; while (run) {
 		frame.vsync(60);
