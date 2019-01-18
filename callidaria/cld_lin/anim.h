@@ -56,6 +56,19 @@ public:
 				glm::vec3(-(pos.x+sclx/2),-(pos.y+scly/2),0));
 		return trans;
 	}
+	glm::mat4 transform_arbit(glm::vec2 tp,glm::vec2 ts,float tr,glm::vec2 a)
+	{
+		float ax=a.x-(pos.x+sclx/2);float ay=a.y-(pos.y+scly/2);
+		glm::mat4 trans=glm::translate(glm::mat4(1.0f),glm::vec3(
+					pos.x+sclx/2+tp.x+ax,
+					pos.y+scly/2+tp.y+ay,0));
+		trans=glm::rotate(trans,glm::radians(tr),glm::vec3(0,0,1));
+		trans=glm::scale(trans,glm::vec3(ts.x,ts.y,1));
+		trans=glm::translate(trans,glm::vec3(
+					-(pos.x+sclx/2+ax),
+					-(pos.y+scly/2+ay),0));
+		return trans;
+	}
 private:
 	glm::vec2 pos; float sclx,scly;
 	std::vector<const char*> tps;

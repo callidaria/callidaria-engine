@@ -5,6 +5,8 @@ welcome to the callidaria engine
 Linux : clone repo, make and go with cld_lin!
 Windows : put cld_win and shader in the same folder as your main.cpp and include!
 
+windows version is 1.1.3
+
 
 the example_main.cpp file shows an compilable setup and rendering example code
 windows users need to include the windows.h file

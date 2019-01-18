@@ -1,5 +1,10 @@
+v1.1.4		18.1.2019
+- rotation around arbitrary axis possible with anims and sprites
+- dynamic 2D transparency with blending
+
 v1.1.3          16.1.2019
 - windows port
+
 v1.1.2          15.1.2019
 - extern shader editing
 - folder hierarchy to update the engine easier while program is in development

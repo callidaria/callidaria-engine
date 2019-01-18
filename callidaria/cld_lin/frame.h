@@ -23,6 +23,8 @@ public:
 			SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL);
 		context = SDL_GL_CreateContext(frame);
 		glewInit();
+        
+    	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	void clear(float cx, float cy, float cz)
 	{
