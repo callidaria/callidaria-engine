@@ -6,23 +6,19 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <glm/gtc/type_ptr.hpp>
 
-class Shader2D
+class Shader
 {
 public:
-	Shader2D() { }
-	void compile()
+	Shader() { }
+	void compile(const char* vspath, const char* fspath)
 	{
-		std::cout<<"\n\033[1;4;37;40mcreating 2D shader\033[0m\n\n";
-		std::cout<<"\033[34mreading 2D vertex shader\n";
-		std::string vertexSrc=read("shader/vertex2d.shader");
+		std::string vertexSrc=read(vspath);
 		const char* vertexSource = vertexSrc.c_str();
-
-		std::cout<<"\033[34mreading 2D fragment shader\n";
-		std::string fragmentSrc=read("shader/fragment2d.shader");
+		std::string fragmentSrc=read(fspath);
 		const char* fragmentSource = fragmentSrc.c_str();
 
-		std::cout<<"\n\033[34mcompiling 2D shaders\033[0m\n";
 		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexSource, NULL);
 		glCompileShader(vertexShader); int status;
@@ -30,8 +26,7 @@ public:
 		if (status != GL_TRUE) {
 			char buffer[512];
 			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-			std::cout << "\033[1;31m2D vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
-		else std::cout << "\033[1;32m2D vertex shader compiled successfully\033[0m\n";
+			std::cout << "\033[1;31mfb vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
 
 		unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
@@ -40,8 +35,7 @@ public:
 		if (status != GL_TRUE) {
 			char buffer[512];
 			glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-			std::cout << "\033[1;31m2D fragment shader error\033[36m\n" << buffer << "\033[0m\n"; }
-		else std::cout << "\033[1;32m2D fragment shader compiled successfully\033[0m\n" << std::endl;
+			std::cout << "\033[1;31mfb fragment shader error\033[36m\n" << buffer << "\033[0m\n"; }
 
 		shaderProgram = glCreateProgram();
 		glAttachShader(shaderProgram, vertexShader);
@@ -50,19 +44,24 @@ public:
 		glLinkProgram(shaderProgram);
 		enable();
 
-		int posAttrib = glGetAttribLocation(shaderProgram, "position");
+		int posAttrib = glGetAttribLocation(shaderProgram,"position");
 		glEnableVertexAttribArray(posAttrib);
 		glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,
 				4*sizeof(float),0);
 
-		int texAttrib = glGetAttribLocation(shaderProgram, "texCoords");
+		int texAttrib = glGetAttribLocation(shaderProgram,"texCoords");
 		glEnableVertexAttribArray(texAttrib);
 		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,
 				4*sizeof(float),(void*)(2*sizeof(float)));
-
-		modelUni = glGetUniformLocation(shaderProgram, "model");
-		viewUni = glGetUniformLocation(shaderProgram, "view");
-		projUni = glGetUniformLocation(shaderProgram, "proj");
+	}
+	void load_index(unsigned int ibo)
+	{
+		int offsetAttrib = glGetAttribLocation(shaderProgram,"offset");
+		glEnableVertexAttribArray(offsetAttrib);
+		glBindBuffer(GL_ARRAY_BUFFER,ibo);
+		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,
+				2*sizeof(float),0);
+		glVertexAttribDivisor(offsetAttrib,1);
 	}
 	void enable()
 	{
@@ -74,15 +73,24 @@ private:
 		std::string ptr;std::ifstream file(path);
 		if (!file.is_open())
 			std::cout<<"\033[1;31mno shader found\033[0m\n";
-		else std::cout<<"\033[1;32mshader loaded\033[0m\n";
 		std::string line = ""; while (!file.eof()) {
 			std::getline(file,line);
 			ptr.append(line + "\n");
 		} file.close();
 		return ptr;
 	}
+public:
+	void upload_int(const char* loc,int i)
+	{ glUniform1i(glGetUniformLocation(shaderProgram,loc),i); }
+	void upload_float(const char* loc,float f)
+	{ glUniform1f(glGetUniformLocation(shaderProgram,loc),f); }
+	void upload_vec2(const char* loc,glm::vec2 v)
+	{ glUniform2f(glGetUniformLocation(shaderProgram,loc),v.x,v.y); }
+	void upload_matrix(const char* loc,glm::mat4 m)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram,loc),
+				1,GL_FALSE,glm::value_ptr(m));
+	}
 private:
 	unsigned int shaderProgram;
-public:
-	int modelUni, viewUni, projUni;
 };

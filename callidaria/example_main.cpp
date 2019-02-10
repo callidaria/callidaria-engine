@@ -1,14 +1,13 @@
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#include "cld_lin/frame.h"
-#include "cld_lin/renderer2d.h"
-#include "cld_lin/button.h"
-#include "cld_lin/rendereri.h"
-#include "cld_lin/camera2d.h"
+#include "cld_lin/frm/frame.h"
+#include "cld_lin/gfx/renderer2d.h"
+#include "cld_lin/fcn/button.h"
+#include "cld_lin/gfx/rendereri.h"
+#include "cld_lin/mat/camera2d.h"
 
 int main(int argc, char** argv)
 {
-	Frame frame = Frame();
+	Frame f = Frame();
 	Renderer2D r2d = Renderer2D(); RendererI ri = RendererI();
 
 	//gui example
@@ -41,27 +40,18 @@ int main(int argc, char** argv)
 
 	std::cout<<"\n\033[36mrunning...\n";
 	glm::vec2 tpos=glm::vec2(0);glm::vec2 tscl=glm::vec2(1);float trot=0.0f;
-	SDL_Event fe; bool ka[1024] = { false }; int mx, my; bool mc = false;
 	bool run=true; while (run) {
-		frame.vsync(60);
-		while(SDL_PollEvent(&fe)) {
-			if (fe.type==SDL_QUIT) run=false;
-			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym==SDLK_ESCAPE)
-				run=false;
-			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym<1024)
-				ka[fe.key.keysym.sym] = true;
-			if (fe.type==SDL_KEYUP&&fe.key.keysym.sym<1024)
-				ka[fe.key.keysym.sym] = false;
-			SDL_GetMouseState(&mx,&my);
-		}
-		frame.clear(0.2f, 0.3f, 0.8f);
+		f.vsync(60); f.input(run);
+		f.clear(0.2f, 0.3f, 0.8f);
 
 		//input test
-		if(ka[SDLK_e])trot-=2.0f;else if(ka[SDLK_q])trot+=2.0f;
-		if(ka[SDLK_w])tpos.y+=2;else if(ka[SDLK_s])tpos.y-=2;
-		if(ka[SDLK_a])tpos.x-=2;else if(ka[SDLK_d])tpos.x+=2;
-		if(ka[SDLK_i])tscl.y+=0.01f;else if(ka[SDLK_k])tscl.y-=0.01f;
-		if(ka[SDLK_j])tscl.x-=0.01f;else if(ka[SDLK_l])tscl.x+=0.01f;
+		if(f.kb.ka[SDLK_e])trot-=2.0f;else if(f.kb.ka[SDLK_q])trot+=2.0f;
+		if(f.kb.ka[SDLK_w])tpos.y+=2;else if(f.kb.ka[SDLK_s])tpos.y-=2;
+		if(f.kb.ka[SDLK_a])tpos.x-=2;else if(f.kb.ka[SDLK_d])tpos.x+=2;
+		if(f.kb.ka[SDLK_i])tscl.y+=0.01f;
+		else if(f.kb.ka[SDLK_k])tscl.y-=0.01f;
+		if(f.kb.ka[SDLK_j])tscl.x-=0.01f;
+		else if(f.kb.ka[SDLK_l])tscl.x+=0.01f;
 		
 		//gui test
 		r2d.prepare();
@@ -73,13 +63,13 @@ int main(int argc, char** argv)
 		r2d.render_anim(0,1);
 
 		//button test
-		b1.render(mx,my,mc); b2.render(mx,my,mc);
+		b1.render(f.m.mx,f.m.my,f.m.mcl);b2.render(f.m.mx,f.m.my,f.m.mcl);
 
 		//instance test
 		ri.prepare();ri.render(0,12);ri.render(1,12);
 
-		frame.update();
+		f.update();
 	}
-	frame.vanish();
+	f.vanish();
 	return 0;
 }

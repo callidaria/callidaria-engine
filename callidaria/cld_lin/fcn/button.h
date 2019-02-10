@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <glm/glm.hpp>
-#include "renderer2d.h"
+#include "../gfx/renderer2d.h"
 
 class Button
 {

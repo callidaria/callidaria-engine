@@ -2,12 +2,10 @@
 
 #include <iostream>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "shader2d.h"
+#include "shader.h"
 #include "sprite.h"
 #include "anim.h"
-#include "camera2d.h"
+#include "../mat/camera2d.h"
 
 class Renderer2D
 {
@@ -49,10 +47,17 @@ public:
 		for (int i = 0; i < sl.size(); i++) sl.at(i).texture();
 		for (int i = 0; i < al.size(); i++) al.at(i).texture();
 	}
-	void load() { load_vertex(); s2d.compile(); load_texture(); }
+	void load()
+	{
+		load_vertex();
+		s2d.compile("shader/vertex2d.shader","shader/fragment2d.shader");
+		load_texture(); 
+	}
 	void load_wcam(Camera2D* c)
 	{ 
-		load_vertex(); s2d.compile(); load_texture();
+		load_vertex();
+		s2d.compile("shader/vertex2d.shader","shader/fragment2d.shader");
+		load_texture();
 		upload_view(c->view2D); upload_proj(c->proj2D);
 	}
 	void prepare() { s2d.enable(); glBindVertexArray(vao); }
@@ -82,15 +87,12 @@ public:
 	}
 	int get_max_sprite() { return sl.size(); }
 	int get_max_anim() { return al.size(); }
-	void upload_model(glm::mat4 m)
-	{ glUniformMatrix4fv(s2d.modelUni, 1, GL_FALSE, glm::value_ptr(m)); }
-	void upload_view(glm::mat4 m)
-	{ glUniformMatrix4fv(s2d.viewUni, 1, GL_FALSE, glm::value_ptr(m)); }
-	void upload_proj(glm::mat4 m)
-	{ glUniformMatrix4fv(s2d.projUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_model(glm::mat4 m) { s2d.upload_matrix("model",m); }
+	void upload_view(glm::mat4 m) { s2d.upload_matrix("view",m); }
+	void upload_proj(glm::mat4 m) { s2d.upload_matrix("proj",m); }
 private:
 	unsigned int vao, vbo, ebo;
 public:
-	Shader2D s2d;
+	Shader s2d;
 	std::vector<Sprite> sl; std::vector<Anim> al;
 };

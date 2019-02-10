@@ -2,11 +2,9 @@
 
 #include <iostream>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "shaderi.h"
+#include "shader.h"
 #include "instance.h"
-#include "camera2d.h"
+#include "../mat/camera2d.h"
 
 class RendererI
 {
@@ -36,10 +34,21 @@ public:
 		std::cout<<"\033[34mtexturing instanced objects\n";
 		for (int i = 0; i < il.size(); i++) il.at(i).texture();
 	}
-	void load() { load_vertex();sI.compile(ibo);load_texture(); }
+	void load()
+	{
+		load_vertex();
+		sI.compile("shader/vertex_inst.shader",
+				"shader/fragment_inst.shader");
+		sI.load_index(ibo);
+		load_texture();
+	}
 	void load_wcam(Camera2D* c)
 	{
-		load_vertex(); sI.compile(ibo); load_texture();
+		load_vertex();
+		sI.compile("shader/vertex_inst.shader",
+				"shader/fragment_inst.shader");
+		sI.load_index(ibo);
+		load_texture();
 		upload_view(c->view2D); upload_proj(c->proj2D);
 	}
 	void prepare() { sI.enable(); glBindVertexArray(vao); }
@@ -53,15 +62,12 @@ public:
 	}
 	void set_offset(int i, int j, glm::vec2 o)
 	{ il.at(i).o[j] = o; }
-	void upload_model(glm::mat4 m)
-	{ glUniformMatrix4fv(sI.modelUni, 1, GL_FALSE, glm::value_ptr(m)); }
-	void upload_view(glm::mat4 m)
-	{ glUniformMatrix4fv(sI.viewUni, 1, GL_FALSE, glm::value_ptr(m)); }
-	void upload_proj(glm::mat4 m)
-	{ glUniformMatrix4fv(sI.projUni, 1, GL_FALSE, glm::value_ptr(m)); }
+	void upload_model(glm::mat4 m) { sI.upload_matrix("model",m); }
+	void upload_view(glm::mat4 m) { sI.upload_matrix("view",m); }
+	void upload_proj(glm::mat4 m) { sI.upload_matrix("proj",m); }
 private:
 	unsigned int vao, vbo, ibo;
 	std::vector<Instance> il;
 public:
-	ShaderI sI;
+	Shader sI;
 };
