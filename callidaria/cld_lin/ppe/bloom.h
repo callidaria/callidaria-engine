@@ -24,7 +24,7 @@ public:
 		glGenVertexArrays(1,&vao); glGenBuffers(1,&vbo);
 		glBindVertexArray(vao); glBindBuffer(GL_ARRAY_BUFFER,vbo);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(verts),&verts,GL_STATIC_DRAW);
-		sfb.compile("shader/fbv_standard.shader",
+		sfb.compile2d("shader/fbv_standard.shader",
 				"shader/fbf_bloom.shader");
 
 		fb=FrameBuffer("shader/fbv_standard.shader",

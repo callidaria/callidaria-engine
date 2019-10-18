@@ -15,9 +15,7 @@ public:
 		ri = r->get_max_anim(); ti = r->get_max_sprite(); c = false;
 		
 		std::vector<const char*> t;
-		t.push_back("res/colour/deselect.png");
-		t.push_back("res/colour/select.png");
-		r->add(p,w,h,t,0);
+		r->add(p,w,h,"res/colour/button.png",1,2,0,0);
 
 		sdir = strlen(dir);
 		for (int i = 0; i < sdir; i++) {
@@ -26,17 +24,17 @@ public:
 			r->add(glm::vec2((iw/2+ip.x)-((sdir/2.0f)*20-i*20+3),
 						ip.y+5),25,25,cpath);
 		} if (next) { r->add(glm::vec2(p.x+w,p.y+5),
-				30,30,"res/alpha/>.png"); sdir++; }
+				30,30,"res/alpha/>.png");sdir++; }
 	}
 	void render(int mx, int my, bool mc)
 	{
 		if (mx<p.x+w&&mx>p.x&&my<720-p.y&&my>720-(p.y+h)) 
 		{
-			if (mc) c = true;
-			r->render_state(ri,1);
+			if(mc)c=true;
+			r->render_state(ri,glm::vec2(0,0));
 		}
-		else r->render_state(ri,0);
-		r->render_sprite(ti,ti+sdir);
+		else r->render_state(ri,glm::vec2(0,1));
+		r->reset_shader();r->render_sprite(ti,ti+sdir);
 	}
 	bool get_trigger() { return c; }
 	void retrigger() { c = false; }

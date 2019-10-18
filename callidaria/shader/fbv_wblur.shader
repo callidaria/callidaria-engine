@@ -13,6 +13,6 @@ void main()
 	float pixel = 1.0 / (1920.0/4.0);
 
 	for(int i=-5;i<5;i++) {
-		blurTexCoords[i+5]=originTex+vec2(pixel*i,0.0);
+		blurTexCoords[i+5]=abs(originTex+vec2(pixel*i,0.0));
 	}
 }

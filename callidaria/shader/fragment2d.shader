@@ -37,7 +37,7 @@ void main()
 	vec4 slo = vec4(0.0,0.0,0.0,0.0);
 	for (int i=0;i<pla;i++) plo+=lumen_point(mix,pl[i]);
 	for (int j=0;j<sla;j++) slo+=lumen_spot(mix,sl[j]);
-	outColour = amb+slo;
+	outColour = amb+plo+slo;
 }
 vec4 lumen_point(vec4 o,light_point l)
 {

@@ -1,4 +1,14 @@
-v1.2.0		10.2.2019
+v1.3.0			18.10.2019
+- 3d support
+- audio support
+- many and many fixes
+- better lighting system
+- text and fonts
+- multisampling
+- shadows
+- and a few minor additions
+
+v1.2.0			10.2.2019
 - xbox controller support
 - framebuffer technology
 - post processing shaders for blur, bloom & sepia
@@ -7,7 +17,7 @@ v1.2.0		10.2.2019
 - new folder hierarchy
 - input optimization
 
-v1.1.4		18.1.2019
+v1.1.4			18.1.2019
 - rotation around arbitrary axis possible with anims and sprites
 - dynamic 2D transparency with blending
 

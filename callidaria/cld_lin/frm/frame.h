@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 class Frame
 {
@@ -10,18 +12,16 @@ public:
 	struct Keyboard { bool ka[1024] = { false }; };
 	struct Mouse { bool mcl=false;int mx,my; };
 	struct XBox {
-		bool start,back;
-		bool a,b,x,y;
-		bool up,down,left,right;
-		bool left_sh,right_sh;
-		int left_tr,right_tr;
-		int xal,yal;int xar,yar;
+		bool start=false,back=false;
+		bool a=false,b=false,x=false,y=false;
+		bool up=false,down=false,left=false,right=false;
+		bool left_sh=false,right_sh=false;
+		int left_tr=false,right_tr=false;
+		int xal=0,yal=0;int xar=0,yar=0;
 	};
 public:
 	Frame()
 	{
-		std::cout<<"\033[1;33mstarting callidaria...\n\n";
-		std::cout<<"\033[1;4;37;40mstarting OpenGL setup\033[0m\n\n";
 		cT = 0; fps = 0; temp_fps = 0; lO = 0;
 		SDL_Init(SDL_INIT_EVERYTHING);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -37,16 +37,22 @@ public:
 		
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+        
+		alcdev=alcOpenDevice(NULL);
+		alccon=alcCreateContext(alcdev,NULL);
+		alcMakeContextCurrent(alccon);
 
-		if (!SDL_IsGameController(0))
-			std::cout << "no controllers found\n";
+		if (!SDL_IsGameController(0)) printf("no controllers found\n");
 		else gc = SDL_GameControllerOpen(0);
 	}
 	void clear(float cx, float cy, float cz)
 	{
 		glClearColor(cx, cy, cz, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	}
+	void clear_depth() { glClear(GL_DEPTH_BUFFER_BIT); }
 	void update()
 	{
 		SDL_GL_SwapWindow(frame);
@@ -66,6 +72,9 @@ public:
 				kb.ka[fe.key.keysym.sym] = true;
 			if (fe.type==SDL_KEYUP&&fe.key.keysym.sym<1024)
 				kb.ka[fe.key.keysym.sym] = false;
+			if (fe.button.button==SDL_BUTTON_LEFT)
+				m.mcl=true;
+			else m.mcl=false;
 
 			SDL_GetMouseState(&m.mx,&m.my);
 
@@ -110,13 +119,15 @@ public:
 	}
 	void vanish()
 	{
-		std::cout<<"\n\033[1;33mclosing callidaria...\n";
 		SDL_GameControllerClose(gc);
+        alcMakeContextCurrent(NULL);
+        alcDestroyContext(alccon);
+        alcCloseDevice(alcdev);
 		SDL_GL_DeleteContext(context); SDL_Quit();
-		std::cout<<"\033[1;35mgoodbye :(\033[0m\n";
 	}
 private:
 	SDL_Window* frame; SDL_GLContext context;
+    ALCdevice* alcdev; ALCcontext* alccon;
 	SDL_GameController* gc = NULL; SDL_Event fe;
 	unsigned int pT, cT, fps, temp_fps, lO;
 public:

@@ -11,7 +11,6 @@ class RendererI
 public:
 	RendererI()
 	{
-		std::cout<<"\033[34mgenerating instance buffers\n";
 		glGenVertexArrays(1,&vao);
 		glGenBuffers(1,&vbo); glGenBuffers(1,&ibo);
 	}
@@ -19,25 +18,21 @@ public:
 	{ Instance proc = Instance(p,w,h,t); il.push_back(proc); }
 	void load_vertex()
 	{
-		std::cout<<"\n\033[40;37;1;4mloading inst renderer\033[0m\n\n";
-		std::cout<<"\033[34mloading instanced vertices\n";
 		int li = il.size(); float v[li*24];
 		for (int j = 0; j < li; j++) {
 			for (int i = 0; i < 24; i++) v[j*24+i] = il.at(j).v[i];
 		}
-		std::cout<<"uploading instance vertices\n";
 		glBindVertexArray(vao); glBindBuffer(GL_ARRAY_BUFFER,vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
 	}
 	void load_texture()
 	{
-		std::cout<<"\033[34mtexturing instanced objects\n";
 		for (int i = 0; i < il.size(); i++) il.at(i).texture();
 	}
 	void load()
 	{
 		load_vertex();
-		sI.compile("shader/vertex_inst.shader",
+		sI.compile2d("shader/vertex_inst.shader",
 				"shader/fragment_inst.shader");
 		sI.load_index(ibo);
 		load_texture();
@@ -45,7 +40,7 @@ public:
 	void load_wcam(Camera2D* c)
 	{
 		load_vertex();
-		sI.compile("shader/vertex_inst.shader",
+		sI.compile2d("shader/vertex_inst.shader",
 				"shader/fragment_inst.shader");
 		sI.load_index(ibo);
 		load_texture();

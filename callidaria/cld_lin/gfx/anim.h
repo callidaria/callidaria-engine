@@ -6,45 +6,45 @@
 #include <SDL2/SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <SOIL/SOIL.h>
+#include "shader.h"
 
 class Anim
 {
 public:
-	Anim(glm::vec2 p, float w, float h, std::vector<const char*> t, unsigned int f)
-		: pos(p),sclx(w),scly(h),tps(t),fl(f)
+	Anim(glm::vec2 p,float w,float h,const char* t,unsigned int row,
+			unsigned int col,unsigned int itn,unsigned int f)
+		: pos(p),sclx(w),scly(h),tp(t),r(row),c(col),fl(f),tn(itn)
 	{
 		v[0] = p.x; v[1] = p.y+h; v[2] = 0.0f; v[3] = 0.0f;
 		v[4] = p.x+w; v[5] = p.y+h; v[6] = 1.0f; v[7] = 0.0f;
 		v[8] = p.x+w; v[9] = p.y; v[10] = 1.0f; v[11] = 1.0f;
 		v[12] = p.x; v[13] = p.y; v[14] = 0.0; v[15] = 1.0f;
-		ft = 0; tn = t.size(); glGenTextures(20, tex);
+		ft=0;glGenTextures(1,&tex);
 	}
 	void texture()
 	{
-		for (int i = 0; i < tps.size(); i++) {
-			glBindTexture(GL_TEXTURE_2D, tex[i]);
-			int width, height;
-			unsigned char* image = SOIL_load_image(tps.at(i),
-				&width, &height, 0, SOIL_LOAD_RGBA);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-				0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-			SOIL_free_image_data(image);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				GL_LINEAR);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
+		glBindTexture(GL_TEXTURE_2D, tex);
+		int width, height;
+		unsigned char* image = SOIL_load_image(tp,
+			&width, &height, 0, SOIL_LOAD_RGBA);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+			0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		SOIL_free_image_data(image);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+			GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+			GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+			GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+			GL_LINEAR);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	void setup()
+	int setup()
 	{
-		glBindTexture(GL_TEXTURE_2D, tex[ft/(fl/tn)]);
-		ft++; if (ft==30) ft=0;
+		glBindTexture(GL_TEXTURE_2D,tex);
+		ft++;if(ft>=30)ft=0;
+		return ft/(fl/tn);
 	}
 	glm::mat4 transform(glm::vec2 tp,glm::vec2 ts,float tr)
 	{
@@ -71,8 +71,9 @@ public:
 	}
 private:
 	glm::vec2 pos; float sclx,scly;
-	std::vector<const char*> tps;
+	const char* tp;
 public:
-	float v[16]; unsigned int tex[20];
-	unsigned int tn, fl, ft;
+	float v[16]; unsigned int tex;
+	unsigned int r,c;
+	float tn, fl, ft;
 };
