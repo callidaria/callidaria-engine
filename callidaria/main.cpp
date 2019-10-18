@@ -7,8 +7,6 @@ int main(int argc, char** argv)
 
 	//TODO: setup
 
-	Camera2D cam2d = Camera2D();
-
 	bool run=true; while (run) {
 		f.vsync(60); f.input(run);
 		f.clear(.1f, .1f, .1f);
