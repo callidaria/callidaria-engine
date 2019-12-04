@@ -43,10 +43,14 @@ public:
 		load_texture();
 		upload_view(c->view3D);upload_proj(c->proj3D);
 	}
-	void prepare() { s3d.enable();glBindVertexArray(vao); }
+	void prepare()
+	{
+		//glEnable(GL_CULL_FACE);glEnable(GL_DEPTH_TEST);glCullFace(GL_BACK);
+		s3d.enable();glBindVertexArray(vao);
+	}
 	void prepare_wcam(Camera3D* c)
 	{
-		s3d.enable();glBindVertexArray(vao);
+		prepare();
 		c->update();upload_view(c->view3D);upload_proj(c->proj3D);
 		s3d.upload_vec3("view_pos",c->pos);
 	}
