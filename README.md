@@ -1,6 +1,6 @@
 welcome to the callidaria engine
 
-!!!!! DISCLAIMER : SDL2, GLEW, GLM OPENAL AND SOIL ARE REQUIRED !!!!!
+!!!!! DISCLAIMER : SDL2, GLEW, GLM, OPENAL AND SOIL ARE REQUIRED !!!!!
 
 Linux : clone repo, make and go with cld_lin!
 Windows : put cld_win and shader in the same folder as your main.cpp and include!
