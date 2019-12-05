@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "framebuffer.h"
+#include "../frm/framebuffer.h"
 #include "../gfx/shader.h"
 
 class MSAA

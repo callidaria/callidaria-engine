@@ -11,7 +11,7 @@
 #include "cld_lin/gfx/light_point3d.h"
 #include "cld_lin/gfx/light_spot3d.h"
 #include "cld_lin/gfx/material3d.h"
-#include "cld_lin/frm/msaa.h"
+#include "cld_lin/ppe/msaa.h"
 #include "cld_lin/ppe/bloom.h"
 #include "cld_lin/fcn/text.h"
 #include "cld_lin/aud/audio.h"
@@ -41,9 +41,13 @@ int main(int argc, char** argv)
 			"res/black.png",glm::vec3(0,1,0),1,glm::vec3(0,0,0));
 	r3d.add("res/cube.obj","res/container.png","res/container_spec.png",
 			"res/black.png",glm::vec3(3,1,4),1,glm::vec3(0,45,0));
+	r3d.add("res/sphere.obj","res/weight.png","res/white.png","res/black.png",
+			glm::vec3(4,3,-5),1,glm::vec3(0,0,0));
+	r3d.add("res/sphere.obj","res/weight.png","res/white.png","res/black.png",
+			glm::vec3(2.3f,5.5f,-3),1,glm::vec3(0,0,0));
 
 	Camera2D cam2d=Camera2D();
-	Camera3D cam3d=Camera3D(glm::vec3(-4,4,7));
+	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7));
 	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
 
 	Light3D l0=Light3D(&r3d,0,glm::vec3(200,100,120),glm::vec3(1,1,1),1);
@@ -58,7 +62,7 @@ int main(int argc, char** argv)
 
 	l0.upload();l1.upload();pl0.upload();l0.set_amnt(2);pl0.set_amnt(0);
 	sl0.upload();sl1.upload();sl0.set_amnt(0);
-	l0.create_shadow(glm::vec3(0,0,0),10,10,5,2048);
+	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
 	Material3D m0=Material3D(&r3d,40,16,0.25f);
 	Material3D m1=Material3D(&r3d,1,64,2.0f);
@@ -78,7 +82,7 @@ int main(int argc, char** argv)
 	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(0,400));
 	tft.load_wcam(&cam2d);tft.load_text();
 
-	float pitch=0;float yaw=-90.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
+	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
 	bool run=true;while (run) {
 		f.vsync(60);f.input(run);
@@ -115,7 +119,7 @@ int main(int argc, char** argv)
 		r3d.s3d.upload_matrix("view",l0.view);
 		r3d.render_mesh(0,1);
 		m0.upload();r3d.render_mesh(1,2);
-		m1.upload();r3d.render_mesh(2,4);
+		m1.upload();r3d.render_mesh(2,6);
 
 		l0.close_shadow();
         
@@ -123,10 +127,10 @@ int main(int argc, char** argv)
 		glCullFace(GL_BACK);r3d.prepare_wcam(&cam3d);
 		r3d.s3d.upload_matrix("light_trans",l0.shadow_mat);
 		l0.upload_shadow();
-        
+
 		r3d.render_mesh(0,1);
 		m0.upload();r3d.render_mesh(1,2);
-		m1.upload();r3d.render_mesh(2,4);
+		m1.upload();r3d.render_mesh(2,6);
 
 		msaa.blit(&ifb);msaa.close();bloom.bloom();f.clear(0,0,0);ifb.render();
 		bloom.setup();f.clear(0,0,0);bloom.render();
@@ -136,7 +140,7 @@ int main(int argc, char** argv)
         
 		r2d.prepare();
 		r2d.render_sprite(0,2);
-        
+
 		f.update();
 	}
 
