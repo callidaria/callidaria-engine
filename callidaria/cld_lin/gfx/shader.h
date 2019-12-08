@@ -162,10 +162,7 @@ public:
 	void upload_vec4(const char* loc,glm::vec4 v)
 	{ glUniform4f(glGetUniformLocation(shaderProgram,loc),v.x,v.y,v.z,v.w); }
 	void upload_matrix(const char* loc,glm::mat4 m)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(shaderProgram,loc),
-				1,GL_FALSE,glm::value_ptr(m));
-	}
+	{ glUniformMatrix4fv(glGetUniformLocation(shaderProgram,loc),1,GL_FALSE,glm::value_ptr(m)); }
 private:
 	unsigned int shaderProgram;
 };

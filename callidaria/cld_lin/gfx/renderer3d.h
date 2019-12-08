@@ -36,18 +36,12 @@ public:
 	void load(Camera3D* c)
 	{
 		load_vertex();
-		shs.compile3d("shader/fbv_shadow.shader",
-				"shader/fbf_shadow.shader");
-		s3d.compile3d("shader/vertex3d.shader",
-				"shader/fragment3d.shader");
+		shs.compile3d("shader/fbv_shadow.shader","shader/fbf_shadow.shader");
+		s3d.compile3d("shader/vertex3d.shader","shader/fragment3d.shader");
 		load_texture();
 		upload_view(c->view3D);upload_proj(c->proj3D);
 	}
-	void prepare()
-	{
-		//glEnable(GL_CULL_FACE);glEnable(GL_DEPTH_TEST);glCullFace(GL_BACK);
-		s3d.enable();glBindVertexArray(vao);
-	}
+	void prepare() { s3d.enable();glBindVertexArray(vao); }
 	void prepare_wcam(Camera3D* c)
 	{
 		prepare();

@@ -1,0 +1,63 @@
+			project : callidaria-engine
+
+bgr
+
+multithreading
+dynamic music
+gamma correction
+HDR
+per-frame reset GPU flags
+stream loading
+batching
+initializing file
+update slowdown
+drawcall reduction
+
+phy
+
+gravity
+surface collision
+sphere collisions
+cube collisions
+chemistry elements
+chemistry distance
+chemistry diffusion
+physical based lighting
+diffuse irradiance
+specular IBL
+
+2d
+
+tex mipmapping
+emit mapping
+particle systems
+shadows
+global illumination
+inverse kinematics
+subsurface scattering
+
+3d
+
+instancing reloaded
+particle systems
+animations collada
+water planes
+depth buffer
+stencil buffer
+3d blending
+cubemaps
+blinn-phong lighting
+point shadows
+normal mapping
+parallax mapping
+deferred shading
+SSAO
+LOD approximation
+volumetric lighting
+heightmapping and dynamic polygons
+global illumination
+inverse kinematics
+subsurface scattering
+fresnel reflection
+fog
+voxel
