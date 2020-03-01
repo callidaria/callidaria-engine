@@ -1,3 +1,10 @@
+v1.3.1			1.2.2020
+- normal mapping
+- fresnel effect
+- beginning shader rework
+- fixed bloombug at edges
+- light header folder hierarchy
+
 v1.3.0			18.10.2019
 - 3d support
 - audio support

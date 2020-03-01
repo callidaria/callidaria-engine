@@ -89,17 +89,27 @@ public:
 		int posAttrib = glGetAttribLocation(shaderProgram,"position");
 		glEnableVertexAttribArray(posAttrib);
 		glVertexAttribPointer(posAttrib,3,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),0);
+				14*sizeof(float),0);
 
 		int texAttrib = glGetAttribLocation(shaderProgram,"texCoords");
 		glEnableVertexAttribArray(texAttrib);
 		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),(void*)(3*sizeof(float)));
+				14*sizeof(float),(void*)(3*sizeof(float)));
 
 		int nmlAttrib = glGetAttribLocation(shaderProgram,"normals");
 		glEnableVertexAttribArray(nmlAttrib);
 		glVertexAttribPointer(nmlAttrib,3,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),(void*)(5*sizeof(float)));
+				14*sizeof(float),(void*)(5*sizeof(float)));
+
+		int tgAttrib = glGetAttribLocation(shaderProgram,"tangent");
+		glEnableVertexAttribArray(tgAttrib);
+		glVertexAttribPointer(tgAttrib,3,GL_FLOAT,GL_FALSE,
+				14*sizeof(float),(void*)(8*sizeof(float)));
+		
+		int btgAttrib = glGetAttribLocation(shaderProgram,"bitangent");
+		glEnableVertexAttribArray(btgAttrib);
+		glVertexAttribPointer(btgAttrib,3,GL_FLOAT,GL_FALSE,
+				14*sizeof(float),(void*)(11*sizeof(float)));
 	}
 	void load_index(unsigned int ibo)
 	{

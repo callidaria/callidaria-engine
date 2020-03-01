@@ -2,8 +2,11 @@
 
 in vec4 Position;
 in vec2 TexCoords;
-in vec4 Normals;
+in vec3 Normals;
 in vec4 light_transpos;
+in vec3 TanLightPos;
+in vec3 TanViewPos;
+in vec3 TanPosition;
 
 out vec4 outColour;
 
@@ -11,8 +14,9 @@ uniform sampler2D tex;
 uniform sampler2D sm;
 uniform sampler2D emit;
 uniform sampler2D shadow_map;
+uniform sampler2D nmap;
 
-uniform float ambient = 0.1;
+uniform float ambient = 0.0;
 uniform vec3 view_pos;
 
 uniform int specular = 2;
@@ -70,19 +74,25 @@ void main()
 }
 vec4 lumen_sun(vec4 o,light_sun l)
 {
-	vec3 norm=normalize(Normals.xyz);
-	vec3 diff_dir=normalize(l.pos-Position.xyz);
-	float diff=max(dot(norm,diff_dir),0.0);
+	vec3 norm=texture(nmap,TexCoords).rgb;
+	norm=normalize(norm*2.0-1.0);
+	vec3 light_dir=normalize(TanLightPos-TanPosition);
+
+	vec3 view_dir=normalize(TanViewPos-TanPosition);
+	float fresnel=max(1-dot(view_dir,norm),0.1);
+
+	float diff=max(dot(light_dir,norm),0.0);
 	vec3 cdiff=diff*l.col;
-	vec3 view_dir=normalize(view_pos-Position.xyz);
-	vec3 spec_dir=reflect(-diff_dir,norm);
-	float spec=pow(max(dot(view_dir,spec_dir),0.0),specular)*spec_int;
+
+	vec3 spec_dir=reflect(-light_dir,norm);
+	float spec=pow(max(dot(view_dir,spec_dir),0.0),32)*1.0*pow(fresnel,0.25);
 	vec3 cspec=spec*l.col;
 
 	vec3 specmap=vec3(texture(sm,TexCoords));
-	vec3 out_spec=o.rgb*cspec*specmap;
+	vec3 emitmap=vec3(texture(emit,TexCoords));
 	vec3 out_diff=o.rgb*cdiff;
-	return vec4((out_spec+out_diff)*l.ins,o.a);
+	vec3 out_spec=(cspec+diff*0.4);
+	return vec4(mix(out_diff,vec3(diff*0.4),specmap*pow(fresnel,4))+cspec*specmap,o.a);
 }
 vec4 lumen_point(vec4 o,light_point l)
 {

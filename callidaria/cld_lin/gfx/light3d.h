@@ -1,14 +1,15 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <glm/glm.hpp>
 #include "renderer3d.h"
-#include "../fcn/terrain.h"
 
 class Light3D
 {
 public:
-	Light3D(Renderer3D* in_r3d,Terrain* itrn,int in_ind,glm::vec3 in_pos,glm::vec3 in_col,float in_ins)
-		:r3d(in_r3d),trn(itrn),ind(in_ind),pos(in_pos),col(in_col),ins(in_ins) { }
+	Light3D(Renderer3D* in_r3d,int in_ind,glm::vec3 in_pos,glm::vec3 in_col,float in_ins)
+		:r3d(in_r3d),ind(in_ind),pos(in_pos),col(in_col),ins(in_ins) { }
 	void upload()
 	{
 		std::string base="al["+std::to_string(ind)+"].";
@@ -16,18 +17,13 @@ public:
 		r3d->s3d.upload_vec3((base+"pos").c_str(),pos);
 		r3d->s3d.upload_vec3((base+"col").c_str(),col);
 		r3d->s3d.upload_float((base+"ins").c_str(),ins);
-		trn->ts.enable();
-		trn->ts.upload_vec3((base+"pos").c_str(),pos);
-		trn->ts.upload_vec3((base+"col").c_str(),col);
-		trn->ts.upload_float((base+"ins").c_str(),ins);
+		r3d->s3d.upload_vec3("light_pos",pos);
 		r3d->s3d.enable();
 	}
 	void set_amnt(int n)
 	{
 		r3d->s3d.enable();
 		r3d->s3d.upload_int("amnt_light_sun",n);
-		trn->ts.enable();
-		trn->ts.upload_int("amnt_light_sun",n);
 		r3d->s3d.enable();
 	}
 	void create_shadow(glm::vec3 to,float width,float height,float f,int res)
@@ -71,7 +67,6 @@ public:
 	}
 public:
 	Renderer3D* r3d;
-	Terrain* trn;
 	int ind;
 	glm::vec3 pos,col;
 	float ins;

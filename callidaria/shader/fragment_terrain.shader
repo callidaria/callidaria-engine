@@ -63,7 +63,7 @@ void main()
 	//for (int k=0;k<amnt_light_spot;k++) slo+=lumen_spot(mix,sl[k]);
 
 	float shadow=calc_shadow(light_transpos);
-	outColour=amb+(alo+plo+slo)*(1.0-shadow);
+	outColour=amb+(alo/*+plo+slo*/)*(1.0-shadow);
 }
 
 vec4 lumen_sun(vec4 o,light_sun l)
@@ -71,6 +71,7 @@ vec4 lumen_sun(vec4 o,light_sun l)
 	vec3 diff_dir=normalize(l.pos-Position.xyz);
 	float diff=max(dot(Normals.xyz,diff_dir),0.0);
 	vec3 cdiff=diff*l.col;
+
 	vec3 view_dir=normalize(view_pos-Position.xyz);
 	vec3 spec_dir=reflect(-diff_dir,Normals.xyz);
 	float spec=pow(max(dot(view_dir,spec_dir),0.0),specular)*spec_int;

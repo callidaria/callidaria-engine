@@ -25,6 +25,7 @@ chemistry diffusion
 physical based lighting
 diffuse irradiance
 specular IBL
+general PBR
 
 2d
 
@@ -42,13 +43,11 @@ instancing reloaded
 particle systems
 animations collada
 water planes
-depth buffer
 stencil buffer
 3d blending
 cubemaps
 blinn-phong lighting
 point shadows
-normal mapping
 parallax mapping
 deferred shading
 SSAO
@@ -58,6 +57,4 @@ heightmapping and dynamic polygons
 global illumination
 inverse kinematics
 subsurface scattering
-fresnel reflection
 fog
-voxel

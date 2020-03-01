@@ -9,9 +9,9 @@ class Renderer3D
 {
 public:
 	Renderer3D() { glGenVertexArrays(1,&vao);glGenBuffers(1,&vbo); }
-	void add(const char* m,const char* t,const char* sm,const char* em,
+	void add(const char* m,const char* t,const char* sm,const char* nm,const char* em,
 			glm::vec3 p,float s,glm::vec3 r)
-	{ Mesh proc=Mesh(m,t,sm,em,p,s,r,&mofs);ml.push_back(proc); }
+	{ Mesh proc=Mesh(m,t,sm,nm,em,p,s,r,&mofs);ml.push_back(proc); }
 	void load_vertex()
 	{
 		int lm=ml.size();unsigned int vs=0;int io=0;
@@ -32,6 +32,7 @@ public:
 		for(int i=0;i<ml.size();i++)ml.at(i).texture();
 		s3d.upload_int("tex",0);s3d.upload_int("sm",1);
 		s3d.upload_int("emit",2);s3d.upload_int("shadow_map",3);
+		s3d.upload_int("nmap",4);
 	}
 	void load(Camera3D* c)
 	{
@@ -57,6 +58,8 @@ public:
 			glBindTexture(GL_TEXTURE_2D,ml.at(i).specmap);
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D,ml.at(i).emitmap);
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_2D,ml.at(i).normap);
 			glDrawArrays(GL_TRIANGLES,ml.at(i).ofs,ml.at(i).size);
 		}
 	}
