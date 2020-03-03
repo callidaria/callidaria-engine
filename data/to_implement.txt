@@ -3,14 +3,13 @@
 bgr
 
 multithreading
-dynamic music
 gamma correction
 HDR
 per-frame reset GPU flags
 stream loading
 batching
 initializing file
-update slowdown
+update slowdown (multiple delta)
 drawcall reduction
 
 phy
@@ -45,7 +44,6 @@ animations collada
 water planes
 stencil buffer
 3d blending
-cubemaps
 blinn-phong lighting
 point shadows
 parallax mapping

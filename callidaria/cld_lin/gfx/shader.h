@@ -12,13 +12,12 @@ class Shader
 {
 public:
 	Shader() { }
-	void compile2d(const char* vspath, const char* fspath)
+	void compile(const char* vspath, const char* fspath)
 	{
 		std::string vertexSrc=read(vspath);
 		const char* vertexSource = vertexSrc.c_str();
 		std::string fragmentSrc=read(fspath);
 		const char* fragmentSource = fragmentSrc.c_str();
-
 		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexSource, NULL);
 		glCompileShader(vertexShader); int status;
@@ -26,8 +25,8 @@ public:
 		if (status != GL_TRUE) {
 			char buffer[512];
 			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-			std::cout << "\033[1;31mfb vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
-
+			std::cout << "\033[1;31mfb vertex shader error:\033[36m\n" << buffer << "\033[0m\n";
+		}
 		unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 		glCompileShader(fragmentShader);
@@ -35,89 +34,61 @@ public:
 		if (status != GL_TRUE) {
 			char buffer[512];
 			glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-			std::cout << "\033[1;31mfb fragment shader error\033[36m\n" << buffer << "\033[0m\n"; }
-
+			std::cout << "\033[1;31mfb fragment shader error\033[36m\n" << buffer << "\033[0m\n";
+		}
 		shaderProgram = glCreateProgram();
 		glAttachShader(shaderProgram, vertexShader);
 		glAttachShader(shaderProgram, fragmentShader);
 		glBindFragDataLocation(shaderProgram, 0, "outColour");
 		glLinkProgram(shaderProgram);
 		enable();
+	}
+	void compile2d(const char* vspath, const char* fspath)
+	{
+		compile(vspath,fspath);
 
+		// SETUP 2D UPLOAD STRUCTURE
 		int posAttrib = glGetAttribLocation(shaderProgram,"position");
 		glEnableVertexAttribArray(posAttrib);
-		glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,
-				4*sizeof(float),0);
-
+		glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,4*sizeof(float),0);
 		int texAttrib = glGetAttribLocation(shaderProgram,"texCoords");
 		glEnableVertexAttribArray(texAttrib);
-		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,
-				4*sizeof(float),(void*)(2*sizeof(float)));
+		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,4*sizeof(float),(void*)(2*sizeof(float)));
 	}
 	void compile3d(const char* vspath,const char* fspath)
 	{
-		std::string vertexSrc=read(vspath);
-		const char* vertexSource = vertexSrc.c_str();
-		std::string fragmentSrc=read(fspath);
-		const char* fragmentSource = fragmentSrc.c_str();
+		compile(vspath,fspath);
 
-		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShader, 1, &vertexSource, NULL);
-		glCompileShader(vertexShader); int status;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-		if (status != GL_TRUE) {
-			char buffer[512];
-			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-			std::cout << "\033[1;31mfb vertex shader error:\033[36m\n" << buffer << "\033[0m\n"; }
-
-		unsigned int fragmentShader=glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-		glCompileShader(fragmentShader);
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-		if (status != GL_TRUE) {
-			char buffer[512];
-			glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-			std::cout << "\033[1;31mfb fragment shader error\033[36m\n" << buffer << "\033[0m\n"; }
-
-		shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, vertexShader);
-		glAttachShader(shaderProgram, fragmentShader);
-		glBindFragDataLocation(shaderProgram, 0, "outColour");
-		glLinkProgram(shaderProgram);
-		enable();
-
+		// SETUP 3D UPLOAD STRUCTURE
 		int posAttrib = glGetAttribLocation(shaderProgram,"position");
 		glEnableVertexAttribArray(posAttrib);
-		glVertexAttribPointer(posAttrib,3,GL_FLOAT,GL_FALSE,
-				14*sizeof(float),0);
-
+		glVertexAttribPointer(posAttrib,3,GL_FLOAT,GL_FALSE,14*sizeof(float),0);
 		int texAttrib = glGetAttribLocation(shaderProgram,"texCoords");
 		glEnableVertexAttribArray(texAttrib);
-		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,
-				14*sizeof(float),(void*)(3*sizeof(float)));
-
+		glVertexAttribPointer(texAttrib,2,GL_FLOAT,GL_FALSE,14*sizeof(float),(void*)(3*sizeof(float)));
 		int nmlAttrib = glGetAttribLocation(shaderProgram,"normals");
 		glEnableVertexAttribArray(nmlAttrib);
-		glVertexAttribPointer(nmlAttrib,3,GL_FLOAT,GL_FALSE,
-				14*sizeof(float),(void*)(5*sizeof(float)));
-
+		glVertexAttribPointer(nmlAttrib,3,GL_FLOAT,GL_FALSE,14*sizeof(float),(void*)(5*sizeof(float)));
 		int tgAttrib = glGetAttribLocation(shaderProgram,"tangent");
 		glEnableVertexAttribArray(tgAttrib);
-		glVertexAttribPointer(tgAttrib,3,GL_FLOAT,GL_FALSE,
-				14*sizeof(float),(void*)(8*sizeof(float)));
-		
+		glVertexAttribPointer(tgAttrib,3,GL_FLOAT,GL_FALSE,14*sizeof(float),(void*)(8*sizeof(float)));
 		int btgAttrib = glGetAttribLocation(shaderProgram,"bitangent");
 		glEnableVertexAttribArray(btgAttrib);
-		glVertexAttribPointer(btgAttrib,3,GL_FLOAT,GL_FALSE,
-				14*sizeof(float),(void*)(11*sizeof(float)));
+		glVertexAttribPointer(btgAttrib,3,GL_FLOAT,GL_FALSE,14*sizeof(float),(void*)(11*sizeof(float)));
+	}
+	void compile_skybox(const char* vspath,const char* fspath)
+	{
+		compile(vspath,fspath);
+		int posAttrib = glGetAttribLocation(shaderProgram,"position");
+		glEnableVertexAttribArray(posAttrib);
+		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
 	}
 	void load_index(unsigned int ibo)
 	{
 		int offsetAttrib = glGetAttribLocation(shaderProgram,"offset");
 		glEnableVertexAttribArray(offsetAttrib);
 		glBindBuffer(GL_ARRAY_BUFFER,ibo);
-		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,
-				2*sizeof(float),0);
+		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,2*sizeof(float),0);
 		glVertexAttribDivisor(offsetAttrib,1);
 	}
 	void load_text(unsigned int ibo)
@@ -125,35 +96,27 @@ public:
 		int offsetAttrib=glGetAttribLocation(shaderProgram,"offset");
 		glEnableVertexAttribArray(offsetAttrib);
 		glBindBuffer(GL_ARRAY_BUFFER,ibo);
-		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),0);
+		glVertexAttribPointer(offsetAttrib,2,GL_FLOAT,GL_FALSE,8*sizeof(float),0);
 		glVertexAttribDivisor(offsetAttrib,1);
 		int texposAttrib=glGetAttribLocation(shaderProgram,"texpos");
 		glEnableVertexAttribArray(texposAttrib);
-		glVertexAttribPointer(texposAttrib,2,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),(void*)(2*sizeof(float)));
+		glVertexAttribPointer(texposAttrib,2,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(2*sizeof(float)));
 		glVertexAttribDivisor(texposAttrib,1);
 		int boundsAttrib=glGetAttribLocation(shaderProgram,"bounds");
 		glEnableVertexAttribArray(boundsAttrib);
-		glVertexAttribPointer(boundsAttrib,2,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),(void*)(4*sizeof(float)));
+		glVertexAttribPointer(boundsAttrib,2,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(4*sizeof(float)));
 		glVertexAttribDivisor(boundsAttrib,1);
 		int cursorAttrib=glGetAttribLocation(shaderProgram,"cursor");
 		glEnableVertexAttribArray(cursorAttrib);
-		glVertexAttribPointer(cursorAttrib,2,GL_FLOAT,GL_FALSE,
-				8*sizeof(float),(void*)(6*sizeof(float)));
+		glVertexAttribPointer(cursorAttrib,2,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(6*sizeof(float)));
 		glVertexAttribDivisor(cursorAttrib,1);
 	}
-	void enable()
-	{
-		glUseProgram(shaderProgram);
-	}
+	void enable() { glUseProgram(shaderProgram); }
 private:
 	std::string read(const char* path)
 	{
 		std::string ptr;std::ifstream file(path);
-		if (!file.is_open())
-			std::cout<<"\033[1;31mno shader found\033[0m\n";
+		if (!file.is_open()) std::cout<<"\033[1;31mno shader found\033[0m\n";
 		std::string line = ""; while (!file.eof()) {
 			std::getline(file,line);
 			ptr.append(line + "\n");
@@ -161,10 +124,8 @@ private:
 		return ptr;
 	}
 public:
-	void upload_int(const char* loc,int i)
-	{ glUniform1i(glGetUniformLocation(shaderProgram,loc),i); }
-	void upload_float(const char* loc,float f)
-	{ glUniform1f(glGetUniformLocation(shaderProgram,loc),f); }
+	void upload_int(const char* loc,int i) { glUniform1i(glGetUniformLocation(shaderProgram,loc),i); }
+	void upload_float(const char* loc,float f) { glUniform1f(glGetUniformLocation(shaderProgram,loc),f); }
 	void upload_vec2(const char* loc,glm::vec2 v)
 	{ glUniform2f(glGetUniformLocation(shaderProgram,loc),v.x,v.y); }
 	void upload_vec3(const char* loc,glm::vec3 v)

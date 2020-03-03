@@ -1,3 +1,9 @@
+v1.3.2			3.3.2020
+- cubemaps
+- skyboxes
+- shader cleanup
+- removing some of the rattenschwanz
+
 v1.3.1			1.3.2020
 - normal mapping
 - fresnel effect

@@ -17,6 +17,7 @@
 #include "cld_lin/aud/audio.h"
 #include "cld_lin/aud/listener.h"
 #include "cld_lin/fcn/terrain.h"
+#include "cld_lin/gfx/cubemap.h"
 
 int main(int argc, char** argv)
 {
@@ -24,11 +25,12 @@ int main(int argc, char** argv)
 
 	// AUDIO
 	Listener listener=Listener();
-	Audio bgm=Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true);
-	Audio nw_sfx=Audio("./res/nice-work.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),false);
+	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true);
+	Audio nw_sfx = Audio("./res/nice-work.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),false);
 
 	// RENDERERS
-	Renderer2D r2d = Renderer2D(); RendererI ri = RendererI();
+	Renderer2D r2d = Renderer2D();
+	RendererI ri = RendererI();
 	Renderer3D r3d = Renderer3D();
 
 	// OBJECTS
@@ -36,7 +38,7 @@ int main(int argc, char** argv)
 	r2d.add(glm::vec2(150,150),100,100,"./res/grass.png");
 
 	r3d.add("res/sun.obj","res/black.png","res/black.png","res/black.png","res/sun_emit.png",
-			glm::vec3(200,100,120),10,glm::vec3(0,0,0));
+			glm::vec3(-200,100,-250),10,glm::vec3(0,0,0));
 	r3d.add("res/floor.obj","res/ct/green-ceramic-tiles_basecolor.png",
 			"res/ct/green-ceramic-tiles_roughness.png","res/ct/green-ceramic-tiles_normal-ogl.png",
 			"res/black.png",glm::vec3(0,0,0),2.5f,glm::vec3(0,0,0));
@@ -50,14 +52,14 @@ int main(int argc, char** argv)
 
 	// CAMERAS
 	Camera2D cam2d=Camera2D();
-	Camera3D cam3d=Camera3D(glm::vec3(-4,4,7));
+	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7));
 	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
 
 	// TERRAIN
 	//Terrain trn = Terrain(&cam3d,glm::vec3(-250,0,-250),500,500,"res/trntex.jpg","res/heightmap.bmp",25);
 
 	// LIGHTS
-	Light3D l0=Light3D(&r3d,0,glm::vec3(200,100,120),glm::vec3(1,1,1),1);
+	Light3D l0=Light3D(&r3d,0,glm::vec3(-200,100,-250),glm::vec3(1,1,1),1);
 	l0.upload();l0.set_amnt(1);
 	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
@@ -78,6 +80,17 @@ int main(int argc, char** argv)
 	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(0,450));
 	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(0,400));
 	tft.load_wcam(&cam2d);tft.load_text();
+
+	// CUBEMAP
+	std::vector<const char*> cmtex = {
+		"res/skybox/right.jpg",
+		"res/skybox/left.jpg",
+		"res/skybox/top.jpg",
+		"res/skybox/bottom.jpg",
+		"res/skybox/front.jpg",
+		"res/skybox/back.jpg"
+	};
+	Cubemap cm = Cubemap(cmtex);
 
 	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
@@ -121,13 +134,20 @@ int main(int argc, char** argv)
 		r3d.s3d.upload_matrix("light_trans",l0.shadow_mat);
 		l0.upload_shadow();
 
-		r3d.render_mesh(0,1);
+		cm.set_cubemap();
+		//r3d.render_mesh(0,1);
 		m0.upload();r3d.render_mesh(1,2);
 		m1.upload();r3d.render_mesh(2,5);
 
+		glDisable(GL_CULL_FACE);
+		cm.prepare_wcam(&cam3d);
+		cm.render();
+
 		// POST PROCESSING
-		msaa.blit(&ifb);msaa.close();bloom.bloom();f.clear(0,0,0);ifb.render();
-		bloom.setup();f.clear(0,0,0);bloom.render();
+		msaa.blit(&ifb);msaa.close();f.clear(0,0,0);ifb.render();
+
+		r2d.prepare();
+		r2d.render_sprite(0,2);
 
 		f.update();
 	}
