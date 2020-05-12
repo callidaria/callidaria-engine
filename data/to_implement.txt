@@ -35,7 +35,7 @@ particle systems
 
 instancing reloaded
 particle systems
-animations collada
+animations
 water planes
 stencil buffer
 3d blending
