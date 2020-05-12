@@ -25,19 +25,15 @@ public:
 		glGenFramebuffers(1,&fbo); glBindFramebuffer(GL_FRAMEBUFFER,fbo);
 		glGenTextures(1,&tex);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE,tex);
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,los,GL_RGB,
-				1280.0f,720.0f,GL_TRUE);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,los,GL_RGB,1280.0f,720.0f,GL_TRUE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE,0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,
-				GL_TEXTURE_2D_MULTISAMPLE,tex,0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D_MULTISAMPLE,tex,0);
 		glGenRenderbuffers(1,&rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER,rbo);
-		glRenderbufferStorageMultisample(GL_RENDERBUFFER,los,
-				GL_DEPTH24_STENCIL8,1280.0f,720.0f);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER,
-				GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,rbo);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER,los,GL_DEPTH24_STENCIL8,1280.0f,720.0f);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,rbo);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 	}
 	void bind() { glBindFramebuffer(GL_FRAMEBUFFER,fbo); }
@@ -45,8 +41,7 @@ public:
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER,fbo);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER,fb->get_fbo());
-		glBlitFramebuffer(0,0,1280.0f,720.0f,0,0,1280.0f,720.0f,
-				GL_COLOR_BUFFER_BIT,GL_NEAREST);
+		glBlitFramebuffer(0,0,1280.0f,720.0f,0,0,1280.0f,720.0f,GL_COLOR_BUFFER_BIT,GL_NEAREST);
 	}
 	void close() { glBindFramebuffer(GL_FRAMEBUFFER,0); }
 	void render()

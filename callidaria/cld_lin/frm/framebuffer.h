@@ -7,7 +7,7 @@ class FrameBuffer
 {
 public:
 	FrameBuffer() {  }
-	FrameBuffer(const char* vsp, const char* fsp)
+	FrameBuffer(int fr_width, int fr_height, const char* vsp, const char* fsp, bool float_buffer)
 	{
 		// SETUP & BUFFER DATA
 		float verts[] = {
@@ -30,14 +30,15 @@ public:
 		glBindFramebuffer(GL_FRAMEBUFFER,fbo);
 		glGenTextures(1,&tex);
 		glBindTexture(GL_TEXTURE_2D,tex);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,1280,720,0,GL_RGB,GL_UNSIGNED_BYTE,NULL);
+		if (float_buffer) glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA16F,fr_width,fr_height,0,GL_RGBA,GL_FLOAT,NULL);
+		else glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,fr_width,fr_height,0,GL_RGB,GL_UNSIGNED_BYTE,NULL);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D,0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,tex,0);
 		glGenRenderbuffers(1,&rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER,rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,1280.0f,720.0f);
+		glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,fr_width,fr_height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,rbo);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 	}

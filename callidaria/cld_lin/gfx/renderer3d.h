@@ -42,7 +42,12 @@ public:
 		load_texture();
 		upload_view(c->view3D);upload_proj(c->proj3D);
 	}
-	void prepare() { s3d.enable();glBindVertexArray(vao); }
+	void prepare()
+	{
+		s3d.enable();
+		glBindVertexArray(vao);
+		glActiveTexture(GL_TEXTURE0);
+	}
 	void prepare_wcam(Camera3D* c)
 	{
 		prepare();
@@ -66,6 +71,7 @@ public:
 	void upload_model(glm::mat4 m) { s3d.upload_matrix("model",m); }
 	void upload_view(glm::mat4 m) { s3d.upload_matrix("view",m); }
 	void upload_proj(glm::mat4 m) { s3d.upload_matrix("proj",m); }
+	void upload_shadow(glm::mat4 m) { s3d.upload_matrix("light_trans",m); }
 private:
 	unsigned int vao,vbo;
 	unsigned int mofs = 0;

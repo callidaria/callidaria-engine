@@ -8,6 +8,7 @@
 class Light3D
 {
 public:
+	Light3D() {  }
 	Light3D(Renderer3D* in_r3d,int in_ind,glm::vec3 in_pos,glm::vec3 in_col,float in_ins)
 		:r3d(in_r3d),ind(in_ind),pos(in_pos),col(in_col),ins(in_ins) { }
 	void upload()
@@ -52,14 +53,24 @@ public:
 		glViewport(0,0,sh_res,sh_res);
 		glBindFramebuffer(GL_FRAMEBUFFER,depth_fbo);
 		glEnable(GL_CULL_FACE);glEnable(GL_DEPTH_TEST);glCullFace(GL_FRONT);
+		glClearColor(0,0,0,1);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		r3d->prepare();
+		r3d->upload_view(view);
+		r3d->upload_proj(proj);
+
 	}
-	void close_shadow()
+	void close_shadow(int w_res, int h_res)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER,0);glViewport(0,0,1280,720);
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		glViewport(0,0,w_res,h_res);
+		glCullFace(GL_BACK);
 	}
 	void upload_shadow()
 	{
-		glActiveTexture(GL_TEXTURE3);glBindTexture(GL_TEXTURE_2D,dtex);
+		r3d->upload_shadow(shadow_mat);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D,dtex);
 	}
 	void upload_shadow_terra()
 	{

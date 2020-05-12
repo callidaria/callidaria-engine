@@ -46,10 +46,10 @@ public:
 
 		// SOURCE
 		alSourcei(audio,AL_BUFFER,buffer);
-		alSourcef(audio,AL_GAIN,gain);
-		alSourcef(audio,AL_PITCH,pitch);
-		alSource3f(audio,AL_POSITION,pos.x,pos.y,pos.z);
-		alSource3f(audio,AL_VELOCITY,vel.x,vel.y,vel.z);
+		set_gain(gain);
+		set_pitch(pitch);
+		set_position(pos);
+		set_velocity(vel);
 		alSourcei(audio,AL_LOOPING,loop);
 	}
 	void play() { alSourcePlay(audio); }
@@ -59,6 +59,10 @@ public:
 		alDeleteSources(1,&audio);
 		alDeleteBuffers(1,&buffer);
 	}
+	void set_gain(float gain) { alSourcef(audio,AL_GAIN,gain); }
+	void set_pitch(float pitch) { alSourcef(audio,AL_PITCH,pitch); }
+	void set_position(glm::vec3 pos) { alSource3f(audio,AL_POSITION,pos.x,pos.y,pos.z); }
+	void set_velocity(glm::vec3 vel) { alSource3f(audio,AL_VELOCITY,vel.x,vel.y,vel.z); }
 private:
 	unsigned int buffer,audio;
 	unsigned char* xbuffer;

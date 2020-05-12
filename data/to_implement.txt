@@ -4,13 +4,12 @@ bgr
 
 multithreading
 gamma correction
-HDR
 per-frame reset GPU flags
-stream loading
 batching
 initializing file
 update slowdown (multiple delta)
-drawcall reduction
+drawcall reduction?
+interface
 
 phy
 
@@ -21,20 +20,16 @@ cube collisions
 chemistry elements
 chemistry distance
 chemistry diffusion
+fluid system
+cloth system
 physical based lighting
 diffuse irradiance
 specular IBL
-general PBR
 
 2d
 
-tex mipmapping
 emit mapping
 particle systems
-shadows
-global illumination
-inverse kinematics
-subsurface scattering
 
 3d
 

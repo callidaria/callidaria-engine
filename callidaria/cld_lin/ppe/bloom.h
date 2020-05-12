@@ -24,13 +24,10 @@ public:
 		glGenVertexArrays(1,&vao); glGenBuffers(1,&vbo);
 		glBindVertexArray(vao); glBindBuffer(GL_ARRAY_BUFFER,vbo);
 		glBufferData(GL_ARRAY_BUFFER,sizeof(verts),&verts,GL_STATIC_DRAW);
-		sfb.compile2d("shader/fbv_standard.shader",
-				"shader/fbf_bloom.shader");
+		sfb.compile2d("shader/fbv_standard.shader","shader/fbf_bloom.shader");
 
-		fb=FrameBuffer("shader/fbv_standard.shader",
-				"shader/fbf_greyscale.shader");
-		blm=FrameBuffer("shader/fbv_standard.shader",
-				"shader/fbf_standard.shader");
+		fb=FrameBuffer(f->w_res,f->h_res,"shader/fbv_standard.shader","shader/fbf_greyscale.shader", false);
+		blm=FrameBuffer(fr->w_res,f->h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader", false);
 		blr=Blur(f);
 	}
 	void bloom() { fb.bind(); f->clear(0.0f,0.0f,0.0f); }

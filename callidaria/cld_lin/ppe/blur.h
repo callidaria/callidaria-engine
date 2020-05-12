@@ -11,10 +11,8 @@ public:
 	Blur(Frame* fr)
 		: f(fr)
 	{
-		b0=FrameBuffer("shader/fbv_hblur.shader",
-				"shader/fbf_blur.shader");
-		b1=FrameBuffer("shader/fbv_wblur.shader",
-				"shader/fbf_blur.shader");
+		b0=FrameBuffer(f->w_res,f->h_res,"shader/fbv_hblur.shader","shader/fbf_blur.shader", false);
+		b1=FrameBuffer(f->w_res,f->h_res,"shader/fbv_wblur.shader","shader/fbf_blur.shader", false);
 	}
 	void blur() { b0.bind(); f->clear(0.0f,0.0f,0.0f); }
 	void stop() { b0.close(); }

@@ -21,7 +21,7 @@
 
 int main(int argc, char** argv)
 {
-	Frame f = Frame();
+	Frame f = Frame("callidaria",1920,1080,true);
 
 	// AUDIO
 	Listener listener=Listener();
@@ -39,20 +39,18 @@ int main(int argc, char** argv)
 
 	r3d.add("res/sun.obj","res/black.png","res/black.png","res/black.png","res/sun_emit.png",
 			glm::vec3(-200,100,-250),10,glm::vec3(0,0,0));
-	r3d.add("res/floor.obj","res/ct/green-ceramic-tiles_basecolor.png",
-			"res/ct/green-ceramic-tiles_roughness.png","res/ct/green-ceramic-tiles_normal-ogl.png",
-			"res/black.png",glm::vec3(0,0,0),2.5f,glm::vec3(0,0,0));
-	r3d.add("res/nsphere.obj","res/ri/rustediron2_basecolor.png","res/ri/rustediron2_metallic.png",
-			"res/ri/rustediron2_normal.png","res/black.png",glm::vec3(4,3,-5),1,glm::vec3(0,0,0));
-	r3d.add("res/nsphere.obj","res/gs/gold-scuffed_basecolor.png","res/gs/gold-scuffed_metallic.png",
-			"res/gs/gold-scuffed_normal.png","res/black.png",glm::vec3(-2.3f,5.5f,-3),1,
-			glm::vec3(0,0,0));
-	r3d.add("res/nsphere.obj","res/oc/oxidized-copper-albedo.png","res/oc/oxidized-copper-metal.png",
-			"res/oc/oxidized-copper-normal-ogl.png","res/black.png",glm::vec3(0,2,0),1,glm::vec3(0,0,0));
+	r3d.add("res/floor.obj","res/mat/pav_stones/alb.jpg","res/mat/pav_stones/disp.jpg",
+			"res/mat/pav_stones/norm.jpg","res/black.png",glm::vec3(0,0,0),2.5f,glm::vec3(0,0,0));
+	r3d.add("res/nsphere.obj","res/mat/marble/alb.jpg","res/mat/marble/disp.jpg","res/mat/marble/norm.jpg",
+			"res/black.png",glm::vec3(4,3,-5),1,glm::vec3(0,0,0));
+	r3d.add("res/nsphere.obj","res/mat/wood/alb.jpg","res/mat/wood/rough.jpg","res/mat/wood/norm.jpg",
+			"res/black.png",glm::vec3(-2.3f,5.5f,-3),1,glm::vec3(0,0,0));
+	r3d.add("res/nsphere.obj","res/mat/metal/alb.jpg","res/mat/metal/disp.jpg","res/mat/metal/norm.jpg",
+			"res/black.png",glm::vec3(0,2,0),1,glm::vec3(0,0,0));
 
 	// CAMERAS
-	Camera2D cam2d=Camera2D();
-	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7));
+	Camera2D cam2d=Camera2D(f.w_res,f.h_res);
+	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7),f.w_res,f.h_res,90.0f);
 	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
 
 	// TERRAIN
@@ -64,13 +62,13 @@ int main(int argc, char** argv)
 	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
 	// MATERIALS
-	Material3D m0=Material3D(&r3d,5,16,0.5f);
+	Material3D m0=Material3D(&r3d,3,8,0.25f);
 	Material3D m1=Material3D(&r3d,1,64,2.0f);
 
 	// POST PROCESSING
 	Bloom bloom=Bloom(&f);
-	MSAA msaa=MSAA("shader/fbv_standard.shader","shader/fbf_standard.shader",16);
-	FrameBuffer ifb=FrameBuffer("shader/fbv_standard.shader","shader/fbf_standard.shader");
+	//MSAA msaa=MSAA("shader/fbv_standard.shader","shader/fbf_standard.shader",16);
+	FrameBuffer ifb=FrameBuffer(f.w_res,f.h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader",false);
 
 	// TEXT
 	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",50,50);Text tft=Text(&fnt);
@@ -92,12 +90,16 @@ int main(int argc, char** argv)
 	};
 	Cubemap cm = Cubemap(cmtex);
 
+	// PPE
+	Bloom blm = Bloom(&f);
+
 	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
 	bool run=true;while (run) {
 		f.vsync(60);f.input(run);
 
 		// INPUT
+		if (f.kb.ka[SDLK_ESCAPE]) break;
 		if (f.m.mcl) {
 			pitch+=(f.m.my-lfy)*-0.1f;
 			yaw+=(f.m.mx-lfx)*0.1f;
@@ -119,39 +121,36 @@ int main(int argc, char** argv)
 
 		// SHADOW
 		l0.prepare_shadow();
-		f.clear(0,0,0);
-
-		r3d.prepare();glActiveTexture(GL_TEXTURE0);
-		r3d.s3d.upload_matrix("proj",l0.proj);
-		r3d.s3d.upload_matrix("view",l0.view);
 		m1.upload();r3d.render_mesh(2,5);
-
-		l0.close_shadow();
+		l0.close_shadow(f.w_res,f.h_res);
 
 		// RENDER
-		msaa.bind();f.clear(0.1f,0.1f,0.1f);
-		glCullFace(GL_BACK);r3d.prepare_wcam(&cam3d);
-		r3d.s3d.upload_matrix("light_trans",l0.shadow_mat);
+		//msaa.bind();
+		blm.bloom();
+		//ifb.bind();
+		f.clear(0.1f,0.1f,0.1f);
+		glCullFace(GL_BACK);
+		r3d.prepare_wcam(&cam3d);
 		l0.upload_shadow();
-
 		cm.set_cubemap();
-		//r3d.render_mesh(0,1);
 		m0.upload();r3d.render_mesh(1,2);
 		m1.upload();r3d.render_mesh(2,5);
 
+		// SKYBOX
 		glDisable(GL_CULL_FACE);
 		cm.prepare_wcam(&cam3d);
 		cm.render();
 
-		// POST PROCESSING
-		msaa.blit(&ifb);msaa.close();f.clear(0,0,0);ifb.render();
+		//MSAA
+		//msaa.blit(&ifb);msaa.close();f.clear(0,0,0);ifb.render();
+		blm.stop();blm.setup();f.clear(0,0,0);blm.render();
+		//ifb.close();f.clear(0,0,0);ifb.render();
 
-		r2d.prepare();
-		r2d.render_sprite(0,2);
+		//r2d.prepare();
+		//r2d.render_sprite(0,2);
 
 		f.update();
 	}
-
 	bgm.remove();
 	nw_sfx.remove();
 

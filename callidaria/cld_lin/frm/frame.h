@@ -20,7 +20,8 @@ public:
 		int xal=0,yal=0;int xar=0,yar=0;
 	};
 public:
-	Frame()
+	Frame(const char* fr_title, int fr_width, int fr_height, bool fs)
+		: w_res(fr_width),h_res(fr_height)
 	{
 		// FPS SETUP
 		cT = 0; fps = 0; temp_fps = 0; lO = 0;
@@ -31,8 +32,10 @@ public:
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
-		frame = SDL_CreateWindow("callidaria",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,1280,720,
-				SDL_WINDOW_OPENGL);
+		if (fs) frame = SDL_CreateWindow(fr_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,fr_width,
+				fr_height,SDL_WINDOW_OPENGL|SDL_WINDOW_FULLSCREEN);
+		else frame = SDL_CreateWindow(fr_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,fr_width,
+				fr_height,SDL_WINDOW_OPENGL);
 		context = SDL_GL_CreateContext(frame);
 		glewInit();
 		
@@ -124,4 +127,5 @@ private:
 	unsigned int pT, cT, fps, temp_fps, lO;		// fps        components
 public:
 	Keyboard kb; Mouse m; XBox xb;			// input devices
+	int w_res, h_res;				// window dimensions
 };

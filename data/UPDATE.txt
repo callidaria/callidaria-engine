@@ -1,3 +1,9 @@
+v1.3.3			12.5.2020
+- usability improvement
+- dynamic resolution settings
+- additional frame settings
+- experimental: exposure based hdr
+
 v1.3.2			3.3.2020
 - cubemaps
 - skyboxes

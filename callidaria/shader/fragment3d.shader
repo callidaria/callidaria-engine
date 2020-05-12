@@ -16,6 +16,8 @@ uniform sampler2D emit;
 uniform sampler2D shadow_map;
 uniform sampler2D nmap;
 
+uniform samplerCube cm;
+
 uniform float ambient = 0.0;
 uniform vec3 view_pos;
 
@@ -71,6 +73,10 @@ void main()
 	float shadow=calc_shadow(light_transpos);
 	vec4 all=amb+(alo+plo+slo)*(1.0-shadow);
 	outColour=vec4(max(all.rgb,emitmap),all.a);
+
+	//vec3 I=normalize(Position.xyz-view_pos);
+	//vec3 R=reflect(I,Normals);
+	//outColour=vec4(texture(cm,R).rgb,1.0);
 }
 vec4 lumen_sun(vec4 o,light_sun l)
 {
