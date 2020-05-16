@@ -1,6 +1,7 @@
 <h1>callidaria</h2>
 <h2>Setup</h2>
-welcome to the callidaria engine
+
+**welcome to the callidaria engine**
 
 **REQUIREMENTS: SDL2, GLEW, GLM, OPENAL AND SOIL**
 
@@ -11,6 +12,7 @@ Windows : put cld_win and shader in the same folder as your main.cpp and include
 
 <h2>Dokumentation</h2>
 <h3>Open Window</h3>
+
 create window:
 ```c++
 //Frame(const char*, int, int, bool);
