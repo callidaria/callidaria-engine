@@ -40,6 +40,7 @@ close window:
 f.vanish();
 ```
 <h3>Input</h3>
+
 check for keyboard input:
 ```c++
 if(f.kb.ka[/*SDLK key code here*/]) //do whatever you want as result
@@ -70,6 +71,7 @@ int xal,yal; //represents the left control stick
 int xar,yar; //represents the right control stick
 ```
 <h3>2D Rendering</h3>
+
 create renderer:
 ```c++
 Renderer2D r2d = Renderer2D();
@@ -126,6 +128,7 @@ reset shader uploads:
 r2d.reset_shader();
 ```
 <h3>3D Rendering</h3>
+
 create renderer:
 ```c++
 Renderer3D r3d = Renderer3D();
@@ -167,6 +170,7 @@ r3d.upload_shadow(shadow); //upload_shadow(glm::mat4);
 <h3>Instancing</h3>
 TODO
 <h3>Camera</h3>
+
 create a 2D camera:
 ```c++
 //Camera2D(float, float);
@@ -191,6 +195,7 @@ glm::vec3 up; //representing up relative relative to the camera
 <h3>Light</h3>
 TODO
 <h3>Materials</h3>
+
 create a material:
 ```c++
 //Material3D(Renderer3D*,int,int,float);
@@ -202,6 +207,7 @@ upload material:
 m0.upload();
 ```
 <h3>Audio</h3>
+
 create a listener:
 ```c++
 //creates listener at origin position, velocity and orientation
@@ -244,6 +250,7 @@ remove audio:
 aud.remove();
 ```
 <h3>Framebuffer</h3>
+
 create a framebuffer:
 ```c++
 //FrameBuffer(int,int,const char*,const char*,bool);
@@ -271,6 +278,7 @@ fb.get_fbo();
 fb.get_tex();
 ```
 <h3>Cubemaps & Skyboxes</h3>
+
 create a cubemap:
 ```c++
 //Cubemap(std::vector<const char*>);
@@ -293,8 +301,8 @@ cm.render();
 <h3>Text</h3>
 TODO
 <h3>Post Processing Effects</h3>
-TODO
 <h5>MSAA</h5>
+
 create msaa effect:
 ```c++
 //MSAA(const char*,const char*,int);
@@ -317,6 +325,7 @@ render multisampled image:
 msaa.render();
 ```
 <h5>Bloom</h5>
+
 create bloom effect:
 ```c++
 Bloom bloom = Bloom(&f); //Bloom(Frame*);
@@ -338,6 +347,7 @@ render bloomed image:
 bloom.render();
 ```
 <h5>Blur</h5>
+
 create blur effect:
 ```c++
 Blur blur = Blur(&f); //Blur(Frame*);
