@@ -16,7 +16,7 @@ public:
 		bool a=false,b=false,x=false,y=false;
 		bool up=false,down=false,left=false,right=false;
 		bool left_sh=false,right_sh=false;
-		int left_tr=false,right_tr=false;
+		int left_tr=0,right_tr=0;
 		int xal=0,yal=0;int xar=0,yar=0;
 	};
 public:

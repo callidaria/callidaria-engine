@@ -49,8 +49,8 @@ int main(int argc, char** argv)
 			"res/black.png",glm::vec3(0,2,0),1,glm::vec3(0,0,0));
 
 	// CAMERAS
-	Camera2D cam2d=Camera2D(f.w_res,f.h_res);
-	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7),f.w_res,f.h_res,90.0f);
+	Camera2D cam2d=Camera2D(1920.0f,1080.0f);
+	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7),1920.0f,1080.0f,90.0f);
 	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
 
 	// TERRAIN
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
 	// POST PROCESSING
 	Bloom bloom=Bloom(&f);
-	//MSAA msaa=MSAA("shader/fbv_standard.shader","shader/fbf_standard.shader",16);
+	MSAA msaa=MSAA("shader/fbv_standard.shader","shader/fbf_standard.shader",16);
 	FrameBuffer ifb=FrameBuffer(f.w_res,f.h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader",false);
 
 	// TEXT
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 
 		// RENDER
 		//msaa.bind();
-		blm.bloom();
+		//blm.bloom();
 		//ifb.bind();
 		f.clear(0.1f,0.1f,0.1f);
 		glCullFace(GL_BACK);
@@ -143,11 +143,11 @@ int main(int argc, char** argv)
 
 		//MSAA
 		//msaa.blit(&ifb);msaa.close();f.clear(0,0,0);ifb.render();
-		blm.stop();blm.setup();f.clear(0,0,0);blm.render();
+		//blm.stop();blm.setup();f.clear(0,0,0);blm.render();
 		//ifb.close();f.clear(0,0,0);ifb.render();
 
-		//r2d.prepare();
-		//r2d.render_sprite(0,2);
+		r2d.prepare();
+		r2d.render_sprite(0,2);
 
 		f.update();
 	}
