@@ -71,12 +71,12 @@ int main(int argc, char** argv)
 	FrameBuffer ifb=FrameBuffer(f.w_res,f.h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader",false);
 
 	// TEXT
-	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",50,50);Text tft=Text(&fnt);
-	tft.add("callidaria FRAMEWORK",glm::vec2(0,600));
-	tft.add("this is a test",glm::vec2(0,550));
-	tft.add("lorem Ipsum",glm::vec2(0,500));
-	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(0,450));
-	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(0,400));
+	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",30,30);Text tft=Text(&fnt);
+	tft.add("callidaria FRAMEWORK",glm::vec2(20,940));
+	tft.add("this is a test",glm::vec2(20,1040));
+	tft.add("lorem Ipsum",glm::vec2(20,1020));
+	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(20,1000));
+	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(20,980));
 	tft.load_wcam(&cam2d);tft.load_text();
 
 	// CUBEMAP
@@ -148,6 +148,9 @@ int main(int argc, char** argv)
 
 		r2d.prepare();
 		r2d.render_sprite(0,2);
+
+		tft.prepare();
+		tft.render(92,glm::vec4(0,0,0,1));
 
 		f.update();
 	}

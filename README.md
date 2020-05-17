@@ -299,7 +299,42 @@ render cubemap as skybox:
 cm.render();
 ```
 <h3>Text</h3>
-TODO
+
+load a font:
+```c++
+//Font(const char*,const char*,float,float);
+Font fnt = Font(fontpath,fontspritesheet,width,height);
+```
+*font file with .fnt ending are supported*
+
+create a text:
+```c++
+Text txt = Text(&fnt); //Text(Font*);
+```
+add string to text:
+```c++
+txt.add(new_string,position); //add(const char*,glm::vec2);
+```
+add single character to text:
+```c++
+txt.add(new_char,position); //add(char,glm::vec2);
+```
+upload 2D camera to text shaders:
+```c++
+txt.load_wcam(&cam2d); //load_wcam(Camera2D*);
+```
+upload text:
+```c++
+txt.load_text();
+```
+prepare text to be rendered:
+```c++
+txt.prepare(); //run right before rendering
+```
+render text:
+```c++
+txt.render(char_amount,text_colour); //render(int,glm::vec4);
+```
 <h3>Post Processing Effects</h3>
 <h5>MSAA</h5>
 
