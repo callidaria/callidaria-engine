@@ -3,129 +3,37 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
-#include <AL/al.h>
+#include <AL/al.h> // ??overinclusion
 #include <AL/alc.h>
+
+struct Keyboard { bool ka[1024] = { false }; };
+struct Mouse { bool mcl=false;int mx,my; };
+struct XBox {
+	bool start=false,back=false;
+	bool a=false,b=false,x=false,y=false;
+	bool up=false,down=false,left=false,right=false;
+	bool left_sh=false,right_sh=false;
+	int left_tr=0,right_tr=0;
+	int xal=0,yal=0;int xar=0,yar=0;
+};
 
 class Frame
 {
 public:
-	struct Keyboard { bool ka[1024] = { false }; };
-	struct Mouse { bool mcl=false;int mx,my; };
-	struct XBox {
-		bool start=false,back=false;
-		bool a=false,b=false,x=false,y=false;
-		bool up=false,down=false,left=false,right=false;
-		bool left_sh=false,right_sh=false;
-		int left_tr=0,right_tr=0;
-		int xal=0,yal=0;int xar=0,yar=0;
-	};
-public:
-	Frame(const char* fr_title, int fr_width, int fr_height, bool fs)
-		: w_res(fr_width),h_res(fr_height)
-	{
-		// FPS SETUP
-		cT = 0; fps = 0; temp_fps = 0; lO = 0;
-		
-		// INIT
-		SDL_Init(SDL_INIT_EVERYTHING);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
-		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
-		if (fs) frame = SDL_CreateWindow(fr_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,fr_width,
-				fr_height,SDL_WINDOW_OPENGL|SDL_WINDOW_FULLSCREEN);
-		else frame = SDL_CreateWindow(fr_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,fr_width,
-				fr_height,SDL_WINDOW_OPENGL);
-		context = SDL_GL_CreateContext(frame);
-		glewInit();
-		
-		// GL SETUP
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-        
-		// AUDIO SETUP
-		alcdev = alcOpenDevice(NULL);
-		alccon = alcCreateContext(alcdev,NULL);
-		alcMakeContextCurrent(alccon);
+	// !!standard contructor
+	Frame(const char* title, int width, int height, bool fs);
 
-		// CONTROLLER SETUP
-		if (!SDL_IsGameController(0)) printf("no controllers found\n");
-		else gc = SDL_GameControllerOpen(0);
-	}
-	void clear(float cx, float cy, float cz)
-	{
-		glClearColor(cx, cy, cz, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	}
-	void update()
-	{
-		SDL_GL_SwapWindow(frame);
-	}
-	void vsync(unsigned int frames)
-	{
-		unsigned int mf = frames;
-		pT = cT; cT = SDL_GetTicks(); temp_fps++;
-		if (cT-lO>=1000) { lO = cT; fps = temp_fps; temp_fps = 0; }
-		if (cT-pT<1000/mf) { SDL_Delay(1000/mf-SDL_GetTicks()+pT); }
-	}
-	void input(bool &run)
-	{
-		while (SDL_PollEvent(&fe)) {
-			if (fe.type==SDL_QUIT) run=false;
-
-			// KEYBOARD INPUT
-			if (fe.type==SDL_KEYDOWN&&fe.key.keysym.sym<1024) kb.ka[fe.key.keysym.sym] = true;
-			if (fe.type==SDL_KEYUP&&fe.key.keysym.sym<1024) kb.ka[fe.key.keysym.sym] = false;
-			
-			//MOUSE INPUT
-			if (fe.button.button==SDL_BUTTON_LEFT) m.mcl=true; else m.mcl=false;
-			SDL_GetMouseState(&m.mx,&m.my);
-
-			// CONTROLLER INPUT
-			if (gc!=NULL) {
-				xb.start=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_START);
-				xb.back=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_BACK);
-				xb.a=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_A);
-				xb.b=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_B);
-				xb.x=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_X);
-				xb.y=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_Y);
-				xb.up=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_DPAD_UP);
-				xb.down=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-				xb.left=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-				xb.right=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-				xb.left_sh=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-				xb.right_sh=SDL_GameControllerGetButton(gc,SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-				xb.xal=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_LEFTX);
-				xb.yal=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_LEFTY);
-				xb.xar=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_RIGHTX);
-				xb.yar=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_RIGHTY);
-				xb.left_tr=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-				xb.right_tr=SDL_GameControllerGetAxis(gc,SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-			}
-		}
-	}
-	void vanish()
-	{
-		// KILL CONTROLLER
-		SDL_GameControllerClose(gc);
-
-		// KILL AUDIO
-		alcMakeContextCurrent(NULL);
-		alcDestroyContext(alccon);
-		alcCloseDevice(alcdev);
-
-		// KILL FRAME
-		SDL_GL_DeleteContext(context);
-		SDL_Quit();
-	}
+	void clear(float cx, float cy, float cz); 	// clear the window
+	void update(); 					// update the window
+	void vsync(unsigned int frames); 		// cap frame count to specified value
+	void input(bool &running); 			// check for user input
+	void vanish(); 					// close program
 private:
-	SDL_Window* frame; SDL_GLContext context;	// frame      components
-	ALCdevice* alcdev; ALCcontext* alccon;		// audio      components
-	SDL_GameController* gc = NULL; SDL_Event fe;	// additional components
-	unsigned int pT, cT, fps, temp_fps, lO;		// fps        components
+	SDL_Window* m_frame; SDL_GLContext m_context;		// frame members
+	ALCdevice* m_alcdev; ALCcontext* m_alccon;		// audio members
+	SDL_GameController* m_gc = NULL; SDL_Event m_fe;	// additional members
+	unsigned int m_pT, m_cT, m_fps, m_tempFPS, m_lO;	// frame related members
 public:
-	Keyboard kb; Mouse m; XBox xb;			// input devices
-	int w_res, h_res;				// window dimensions
+	Keyboard kb; Mouse mouse; XBox xb;	// input devices
+	int w_res, h_res;			// window dimensions
 };

@@ -3,7 +3,6 @@
 #include "cld_lin/frm/frame.h"
 #include "cld_lin/gfx/renderer2d.h"
 #include "cld_lin/gfx/renderer3d.h"
-#include "cld_lin/fcn/button.h"
 #include "cld_lin/gfx/rendereri.h"
 #include "cld_lin/mat/camera2d.h"
 #include "cld_lin/mat/camera3d.h"
@@ -100,10 +99,10 @@ int main(int argc, char** argv)
 
 		// INPUT
 		if (f.kb.ka[SDLK_ESCAPE]) break;
-		if (f.m.mcl) {
-			pitch+=(f.m.my-lfy)*-0.1f;
-			yaw+=(f.m.mx-lfx)*0.1f;
-		} lfx=f.m.mx;lfy=f.m.my;
+		if (f.mouse.mcl) {
+			pitch+=(f.mouse.my-lfy)*-0.1f;
+			yaw+=(f.mouse.mx-lfx)*0.1f;
+		} lfx=f.mouse.mx;lfy=f.mouse.my;
 		if (f.kb.ka[SDLK_i]) pitch+=1.0f;
 		else if (f.kb.ka[SDLK_k]) pitch-=1.0f;
 		if (f.kb.ka[SDLK_j]) yaw-=1.0f;

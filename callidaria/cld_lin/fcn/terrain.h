@@ -4,6 +4,13 @@
 #include "../gfx/shader.h"
 #include "../mat/camera3d.h"
 
+
+
+/*
+ *		!!!ATTENTION!!!
+ *	THIS IS WORK IN PROGRESS AND GUARANTEED TO BE WRONG AND LITTERED WITH BUGS
+ *	=> PLEASE WAIT WHILE THE EXTERMINATION TEAM ARRIVES
+ * */
 class Terrain
 {
 public:
