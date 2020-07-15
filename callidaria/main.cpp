@@ -20,7 +20,7 @@
 
 int main(int argc, char** argv)
 {
-	Frame f = Frame("callidaria",1920,1080,true);
+	Frame f = Frame("callidaria",0,true);
 
 	// AUDIO
 	Listener listener=Listener();
@@ -117,6 +117,10 @@ int main(int argc, char** argv)
 		else if (f.kb.ka[SDLK_d]) cam3d.pos+=0.05f*glm::normalize(glm::cross(cam3d.front,cam3d.up));
 		if (f.kb.ka[SDLK_r]) cam3d.pos+=0.05f*cam3d.up;
 		else if (f.kb.ka[SDLK_f]) cam3d.pos-=0.05f*cam3d.up;
+
+		for (int i=0;i<1;i++) {
+			if (f.xb[i].a) printf("button a%i pressed\n",i);
+		}
 
 		// SHADOW
 		l0.prepare_shadow();

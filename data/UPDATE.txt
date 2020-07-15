@@ -1,3 +1,11 @@
+v1.3.4			xx.xx.xxxx
+- every line of code complete renewed (goal)
+- usability improvement (goal)
+- every header cleaned (goal)
+- more features for more intuitive frame creation
+- multiple controller support
+- eyecandy code (goal)
+
 v1.3.3			12.5.2020
 - usability improvement
 - dynamic resolution settings

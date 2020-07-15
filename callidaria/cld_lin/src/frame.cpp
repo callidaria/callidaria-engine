@@ -1,39 +1,37 @@
 #include "../frm/frame.h"
 
-Frame::Frame(const char* title,int width,int height,bool fs)
-	: w_res(width), h_res(height)
+/*
+ *	ADD OUTPUT INFORMATION ABOUT SYSTEM AND WINDOW SETTINGS !!
+ *	AND DECORATE ALL ERROR AND SYSTEM OUTPUTS .
+ *	ALSO MAYBE IMPLEMENT WITH VIEWPORT RIGHT FROM THE BEGINNING ?
+ * */
+Frame::Frame() : w_res(800),h_res(600) { Frame("callidaria",800,600,false); }
+Frame::Frame(const char* title,int screen,bool fs)
 {
-	// sdl setup
-	SDL_Init(SDL_INIT_EVERYTHING); // ??maybe just video
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
+	init();
 
-	// creating window
-	if (fs) m_frame = SDL_CreateWindow(title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,
-			SDL_WINDOW_OPENGL|SDL_WINDOW_FULLSCREEN); // ??delete the centering flags bc unessessary
-	else m_frame = SDL_CreateWindow(title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,
-			SDL_WINDOW_OPENGL); // ??windowposition flags irrelevant
-	m_context = SDL_GL_CreateContext(m_frame);
+	SDL_Rect dim_screen;
+	get_screen(screen,&dim_screen);
 
-	// opengl setup
-	glewInit();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST); // ??remove for context based implementation. framebuffers will be mad about this!
-	glEnable(GL_CULL_FACE); // ??it is bullshit to autoenable it this soon bcuz 2d only disables it @prepare()
+	w_res = dim_screen.w;
+	h_res = dim_screen.h;
+	setup(title,dim_screen.x,dim_screen.y,dim_screen.w,dim_screen.h,fs);
+}
+Frame::Frame(const char* title,int width,int height,bool fs)
+	: w_res(width),h_res(height)
+{
+	init();
+	setup(title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,fs);
+}
+Frame::Frame(const char* title,int screen,int width,int height,bool fs)
+	: w_res(width),h_res(height)
+{
+	init();
 
-	// audio setup
-	m_alcdev = alcOpenDevice(NULL); // !!wat u doin' parameter! wat was i thinking!
-	m_alccon = alcCreateContext(m_alcdev,NULL);
-	alcMakeContextCurrent(m_alccon); // ??maybe autocontextualized in main thread
+	SDL_Rect dim_screen;
+	get_screen(screen,&dim_screen);
 
-	// controller setup
-	if (!SDL_IsGameController(0)) printf("no controllers found\n"); // !!decorate output
-	else m_gc = SDL_GameControllerOpen(0); // !!multiple controller support
-
-	m_cT = 0; m_fps = 0; m_tempFPS = 0; m_lO = 0; // ??all necessary & syntax
+	setup(title,dim_screen.x+100,dim_screen.y+100,width,height,fs);
 }
 void Frame::clear(float cx,float cy,float cz)
 {
@@ -42,9 +40,9 @@ void Frame::clear(float cx,float cy,float cz)
 }
 void Frame::update() { SDL_GL_SwapWindow(m_frame); }
 /*
- *	THIS MIGHT BE EFFICTIVE FOR A VSYNC FUNCTION BUT THIS IS !!!NOT!!! APPROPRIATE FOR A DELTA TIME RELIANCE !
+ *	THIS MIGHT BE EFFICTIVE FOR A VSYNC FUNCTION BUT THIS IS !!!NOT!!! APPROPRIATE FOR DELTA TIME RELIANCE !
  *	MAKE VSYNC OPTIONAL AND BASE TIME RELATED UPDATES AND PHYSICS TO A LEGITIMATE DELTA TIME .
- *	THIS ISN'T THE 90s ANYMORE GODDAMMIT. THE LATER THIS HAPPENS THE MORE CODE HAS TO BE CHANGED WHEN IS DOES
+ *	THIS ISN'T THE 90s ANYMORE GODDAMMIT . THE LATER THIS HAPPENS THE MORE CODE HAS TO BE CHANGED WHEN IS DOES
  * */
 void Frame::vsync(unsigned int frames)
 {
@@ -62,7 +60,7 @@ void Frame::vsync(unsigned int frames)
 void Frame::input(bool &running)
 {
 	while (SDL_PollEvent(&m_fe)) {
-		if (m_fe.type==SDL_QUIT) running = false; // exit the program when closing is requested
+		running = m_fe.type!=SDL_QUIT; // exit the program when closing is requested
 
 		// read keyboard input
 		if (m_fe.type==SDL_KEYDOWN&&m_fe.key.keysym.sym<1024) kb.ka[m_fe.key.keysym.sym] = true;
@@ -70,39 +68,40 @@ void Frame::input(bool &running)
 
 		// read mouse input
 		SDL_GetMouseState(&mouse.mx,&mouse.my);
-		if (m_fe.button.button==SDL_BUTTON_LEFT) mouse.mcl = true; else mouse.mcl = false; // !!equal to func
-		// !!add all mouse functions please. even the amiga mouse has more buttons
+		mouse.mcl = m_fe.button.button==SDL_BUTTON_LEFT;
+		mouse.mcr = m_fe.button.button==SDL_BUTTON_RIGHT; // ??one or another. not only one at a time please?
 
 		// read controller input
 		/*
 		 * please! this is pure horror. this code is so damn ugly and big.
 		 * ??reduction much ...maybe get values of all controller macros and find relation to loop everything
 		 * */
-		if (m_gc!=NULL) {
-			xb.start = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_START);
-			xb.back = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_BACK);
-			xb.a = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_A);
-			xb.b = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_B);
-			xb.x = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_X);
-			xb.y = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_Y);
-			xb.up = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_DPAD_UP);
-			xb.down = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-			xb.left = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-			xb.right = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-			xb.left_sh = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-			xb.right_sh = SDL_GameControllerGetButton(m_gc,SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-			xb.xal = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_LEFTX);
-			xb.yal = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_LEFTY);
-			xb.xar = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_RIGHTX);
-			xb.yar = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_RIGHTY);
-			xb.left_tr = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-			xb.right_tr = SDL_GameControllerGetAxis(m_gc,SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		for (int i=0;i<m_gc.size();i++) {
+			xb[i].start = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_START);
+			xb[i].back = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_BACK);
+			xb[i].a = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_A);
+			xb[i].b = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_B);
+			xb[i].x = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_X);
+			xb[i].y = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_Y);
+			xb[i].up = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_UP);
+			xb[i].down = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+			xb[i].left = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+			xb[i].right = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+			xb[i].left_sh = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+			xb[i].right_sh = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+			xb[i].xal = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_LEFTX);
+			xb[i].yal = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_LEFTY);
+			xb[i].xar = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_RIGHTX);
+			xb[i].yar = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_RIGHTY);
+			xb[i].left_tr = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+			xb[i].right_tr = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 		}
 	}
 }
 void Frame::vanish()
 {
-	SDL_GameControllerClose(m_gc); // closing controller reference
+	// ??doing this with an array reference even cleaner
+	for (int i=0;i<m_gc.size();i++) SDL_GameControllerClose(m_gc.at(i)); // closing controller reference
 
 	// closing audio context & device
 	alcMakeContextCurrent(NULL); // ??doesn't this happen automatically
@@ -112,4 +111,52 @@ void Frame::vanish()
 	// closing render context & program
 	SDL_GL_DeleteContext(m_context);
 	SDL_Quit();
+}
+void Frame::init()
+{
+	// sdl setup
+	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3); // ??flexible support for older versions
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
+}
+void Frame::setup(const char* title,int x,int y,int width,int height,bool fs)
+{
+	// creating window
+	if (fs) m_frame = SDL_CreateWindow(title,x,y,width,height,SDL_WINDOW_OPENGL|SDL_WINDOW_FULLSCREEN);
+	else m_frame = SDL_CreateWindow(title,x,y,width,height,SDL_WINDOW_OPENGL); // ??looks awful
+	m_context = SDL_GL_CreateContext(m_frame);
+
+	// opengl setup
+	glewInit();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+	// openal setup
+	m_alcdev = alcOpenDevice(NULL);
+	m_alccon = alcCreateContext(m_alcdev,NULL);
+	alcMakeContextCurrent(m_alccon); // ??maybe autocontextualized in main thread
+
+	// controller setup
+	int gcc = 0;
+	while (SDL_IsGameController(gcc)) {
+		m_gc.push_back(SDL_GameControllerOpen(gcc));
+		gcc++;
+	} if (gcc==0) printf("no controllers plugged in\n"); // !!decorate output
+
+	m_cT = 0; m_fps = 0; m_tempFPS = 0; m_lO = 0; // ??all necessary & syntax
+}
+void Frame::get_screen(int screen,SDL_Rect* dim_screen)
+{
+	// ??this would be fatal if false ...maybe close the program immediately afterwards to not cause mem leak
+	// right now this falls back to a normalized state that can't fail ...ugly and not recommended
+	if (screen<SDL_GetNumVideoDisplays()||SDL_GetDisplayBounds(screen,dim_screen)!=0) { // !!no, i can't watch
+		// ??equivalence is unnessessary through boolcast
+		printf("screen could not be set: %s\n",SDL_GetError()); // !!decoration much
+		dim_screen->x = 0;
+		dim_screen->y = 0;
+		dim_screen->w = 1280.0f;
+		dim_screen->h = 720.0f;
+	}
 }
