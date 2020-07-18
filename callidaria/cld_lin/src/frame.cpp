@@ -143,7 +143,7 @@ void Frame::setup(const char* title,int x,int y,int width,int height,bool fs)
 	while (SDL_IsGameController(gcc)) {
 		m_gc.push_back(SDL_GameControllerOpen(gcc));
 		gcc++;
-	} if (gcc==0) printf("no controllers plugged in\n"); // !!decorate output
+	} if (gcc==0) printf("\033[0;34mno controllers plugged in\n"); // !!decorate output
 
 	m_cT = 0; m_fps = 0; m_tempFPS = 0; m_lO = 0; // ??all necessary & syntax
 }
@@ -153,10 +153,12 @@ void Frame::get_screen(int screen,SDL_Rect* dim_screen)
 	// right now this falls back to a normalized state that can't fail ...ugly and not recommended
 	if (screen<SDL_GetNumVideoDisplays()||SDL_GetDisplayBounds(screen,dim_screen)!=0) { // !!no, i can't watch
 		// ??equivalence is unnessessary through boolcast
-		printf("screen could not be set: %s\n",SDL_GetError()); // !!decoration much
-		dim_screen->x = 0;
-		dim_screen->y = 0;
-		dim_screen->w = 1280.0f;
-		dim_screen->h = 720.0f;
+		printf("\033[1;31mscreen could not be set: %s\n",SDL_GetError()); // !!decoration much
+		printf("\033[1;36m\t=> falling back to standard configuration\n");
+		dim_screen->x = 0; dim_screen->y = 0; dim_screen->w = 1280; dim_screen->h = 720;
+	} // ??laptop falls back into standard config at screen zero ...why the fkk? i have at least one screen????
+	else { // !!obfuscate asap
+		// !!test this output on fedora system
+		printf("\033[1;36mframe resolution is set to: %ix%i\n",dim_screen->w,dim_screen->h);
 	}
 }

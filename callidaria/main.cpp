@@ -18,13 +18,13 @@
 #include "cld_lin/fcn/terrain.h"
 #include "cld_lin/gfx/cubemap.h"
 
-int main(int argc, char** argv)
+int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",0,true);
+	Frame f = Frame("callidaria",1920,1080,true);
 
 	// AUDIO
 	Listener listener=Listener();
-	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true);
+	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true); //bgm.play();
 	Audio nw_sfx = Audio("./res/nice-work.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),false);
 
 	// RENDERERS

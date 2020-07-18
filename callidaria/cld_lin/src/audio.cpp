@@ -55,9 +55,15 @@ void Audio::read(const char* path)
 	fread(&bips,sizeof(short),1,file);
 	fread(type,sizeof(char),4,file);
 	fread(&dSize,sizeof(char),4,file);
-	m_xbuffer = new unsigned char[dSize];
-	fread(m_xbuffer,sizeof(unsigned char),dSize,file);
+
+	// why the fuck you don't just set this variable gawddammit. no fucking reason!!
+	unsigned char* xbuffer = new unsigned char[dSize];
+	fread(xbuffer,sizeof(unsigned char),dSize,file);
 	fclose(file);
+
+	// ??will removing this cause a mem leak ...and above all else, do i care?
+	// !!it even causes a mem leak in it's current state. this xbuffer management is a disaster
+	m_xbuffer = xbuffer; // some (?unnessessary) and very verbose high level retardation. kill it with fire!
 
 	// audio buffer data
 	ALenum format;
@@ -69,4 +75,5 @@ void Audio::read(const char* path)
 		else if (ch == 2) format = AL_FORMAT_STEREO16;
 	} else std::cout << "invalid bits per second value" << std::endl; // formatting output
 	alBufferData(m_buffer,format,m_xbuffer,dSize,rate);
+	//delete[] xbuffer;
 }
