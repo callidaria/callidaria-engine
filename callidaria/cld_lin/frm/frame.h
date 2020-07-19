@@ -15,8 +15,7 @@
  *	DON'T USE THIS FEATURE UNTIL I WENT AND BOUGHT A SECOND CONTROLLER !
  * */
 struct Keyboard { bool ka[1024] = { false }; };
-// !!test new mouse features
-struct Mouse { bool mcl=false,mcr=false;int mx,my; }; // !!add the mousewheel. it's important.
+struct Mouse { bool mcl=false,mcr=false;int mx,my,mw; };
 struct XBox {
 	bool start=false,back=false;
 	bool a=false,b=false,x=false,y=false;
@@ -29,7 +28,6 @@ struct XBox {
 class Frame
 {
 public:
-	Frame(); // standard values = { "callidaria",800,600,false }
 	Frame(const char* title,int screen,bool fs);
 	Frame(const char* title,int width,int height,bool fs); // used by standard constructor
 	Frame(const char* title,int screen,int width,int height,bool fs);

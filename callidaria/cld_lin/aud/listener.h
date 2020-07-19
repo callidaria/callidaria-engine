@@ -7,8 +7,8 @@
 class Listener
 {
 public:
-	Listener(); // standard values = { glm::vec3(0.0f),glm::vec3(0.0f),glm::vec3(0.0f,0.0f,-1.0f) }
-	Listener(glm::vec3 pos,glm::vec3 vel,glm::vec3 ori);
+	//Listener(); // standard values = { glm::vec3(0.0f),glm::vec3(0.0f),glm::vec3(0.0f,0.0f,-1.0f) }
+	Listener(glm::vec3 pos=glm::vec3(0.0f),glm::vec3 vel=glm::vec3(0.0f),glm::vec3 ori=glm::vec3(0,0,-1));
 
 	// setters
 	void set_position(glm::vec3 pos);

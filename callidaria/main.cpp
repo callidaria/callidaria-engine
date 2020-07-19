@@ -20,11 +20,12 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",1920,1080,true);
+	Frame f = Frame("callidaria",0,1280,720,false);
 
 	// AUDIO
 	Listener listener=Listener();
-	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true); //bgm.play();
+//	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true);
+	Audio bgm = Audio("./res/audio.wav");
 	Audio nw_sfx = Audio("./res/nice-work.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),false);
 
 	// RENDERERS
@@ -94,6 +95,9 @@ int main(int argc,char** argv)
 
 	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
+
+	bgm.play();
+
 	bool run=true;while (run) {
 		f.vsync(60);f.input(run);
 

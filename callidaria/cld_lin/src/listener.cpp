@@ -1,6 +1,5 @@
 #include "../aud/listener.h"
 
-Listener::Listener() { Listener(glm::vec3(0.0f),glm::vec3(0.0f),glm::vec3(0.0f,0.0f,-1.0f)); }
 Listener::Listener(glm::vec3 pos,glm::vec3 vel,glm::vec3 ori)
 {
 	set_position(pos);
@@ -10,4 +9,5 @@ Listener::Listener(glm::vec3 pos,glm::vec3 vel,glm::vec3 ori)
 void Listener::set_position(glm::vec3 pos) { alListener3f(AL_POSITION,pos.x,pos.y,pos.z); }
 void Listener::set_velocity(glm::vec3 vel) { alListener3f(AL_VELOCITY,vel.x,vel.y,vel.z); }
 void Listener::set_orientation(glm::vec3 ori) { alListener3f(AL_ORIENTATION,ori.x,ori.y,ori.z); }
-// all quite trivial
+
+// all quite trivial. nothing really to see her.
