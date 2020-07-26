@@ -20,11 +20,10 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",0,1280,720,false);
+	Frame f = Frame("callidaria",1,1280,720,false);
 
 	// AUDIO
 	Listener listener=Listener();
-//	Audio bgm = Audio("./res/audio.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),true);
 	Audio bgm = Audio("./res/audio.wav");
 	Audio nw_sfx = Audio("./res/nice-work.wav",1,1,glm::vec3(0,0,0),glm::vec3(0,0,0),false);
 
@@ -122,8 +121,10 @@ int main(int argc,char** argv)
 		if (f.kb.ka[SDLK_r]) cam3d.pos+=0.05f*cam3d.up;
 		else if (f.kb.ka[SDLK_f]) cam3d.pos-=0.05f*cam3d.up;
 
-		for (int i=0;i<1;i++) {
-			if (f.xb[i].a) printf("button a%i pressed\n",i);
+		for (int i=0;i<f.xb.size();i++) {
+			if (f.xb.at(i).xbb[SDL_CONTROLLER_BUTTON_A]) printf("\033[0mbutton a%i pressed\n",i);
+			if (f.xb.at(i).xba[SDL_CONTROLLER_AXIS_TRIGGERRIGHT]>1000)
+				printf("\033[0mtrigger%i casted\n",i);
 		}
 
 		// SHADOW

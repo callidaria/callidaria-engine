@@ -42,9 +42,8 @@ void Frame::update() { SDL_GL_SwapWindow(m_frame); }
  *	MAKE VSYNC OPTIONAL AND BASE TIME RELATED UPDATES AND PHYSICS TO A LEGITIMATE DELTA TIME .
  *	THIS ISN'T THE 90s ANYMORE GODDAMMIT . THE LATER THIS HAPPENS THE MORE CODE HAS TO BE CHANGED WHEN IT DOES
  * */
-void Frame::vsync(unsigned int frames)
+void Frame::vsync(unsigned int mf)
 {
-	unsigned int mf = frames; // ??why this paranoid variable save. frames never gets changed
 	m_pT = m_cT;
 	m_cT = SDL_GetTicks();
 	m_tempFPS++;
@@ -52,8 +51,7 @@ void Frame::vsync(unsigned int frames)
 		m_lO = m_cT;
 		m_fps = m_tempFPS;
 		m_tempFPS = 0;
-	} // ??can this be joined to a single case differentiation
-	if (m_cT-m_pT<1000/mf) SDL_Delay(1000/mf-SDL_GetTicks()+m_pT);
+	} if (m_cT-m_pT<1000/mf) SDL_Delay(1000/mf-SDL_GetTicks()+m_pT);
 }
 void Frame::input(bool &running)
 {
@@ -71,35 +69,19 @@ void Frame::input(bool &running)
 		mouse.mw = m_fe.wheel.y;
 
 		// read controller input
-		/*
-		 * please! this is pure horror. this code is so damn ugly and big.
-		 * ??reduction much ...maybe get values of all controller macros and find relation to loop everything
-		 * */
 		for (int i=0;i<m_gc.size();i++) {
-			xb[i].start = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_START);
-			xb[i].back = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_BACK);
-			xb[i].a = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_A);
-			xb[i].b = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_B);
-			xb[i].x = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_X);
-			xb[i].y = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_Y);
-			xb[i].up = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_UP);
-			xb[i].down = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-			xb[i].left = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-			xb[i].right = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-			xb[i].left_sh = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-			xb[i].right_sh = SDL_GameControllerGetButton(m_gc.at(i),SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-			xb[i].xal = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_LEFTX);
-			xb[i].yal = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_LEFTY);
-			xb[i].xar = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_RIGHTX);
-			xb[i].yar = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_RIGHTY);
-			xb[i].left_tr = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-			xb[i].right_tr = SDL_GameControllerGetAxis(m_gc.at(i),SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+			for (int j=0;j<6;j++)
+				xb.at(i).xba[j] = SDL_GameControllerGetAxis(m_gc.at(i),(SDL_GameControllerAxis)j);
+			for (int j=0;j<16;j++)
+				xb.at(i).xbb[j] = SDL_GameControllerGetButton(m_gc.at(i),(SDL_GameControllerButton)j);
 		}
+		// face buttons have the default xbox layout so for sony it is X=A,O=B,sq=X and delta=Y
+		// results in SDL_CONTROLLER_BUTTON_* macro for nintendo controllers having exchanged a&b recognition
 	}
 }
 void Frame::vanish()
 {
-	// ??doing this with an array reference even cleaner when converted
+	// ??doing this with an array reference even cleaner when converted & test when valgrind isn't mad anymore
 	for (int i=0;i<m_gc.size();i++) SDL_GameControllerClose(m_gc.at(i)); // closing controller reference
 
 	// closing audio context & device
@@ -141,15 +123,16 @@ void Frame::setup(const char* title,int x,int y,int width,int height,bool fs)
 	int gcc = 0;
 	while (SDL_IsGameController(gcc)) {
 		m_gc.push_back(SDL_GameControllerOpen(gcc));
+		xb.push_back(XBox()); // !!negative points for style ...maybe stack usage instead???
 		gcc++;
-	} if (gcc==0) printf("\033[0;34mno controllers plugged in\n");
+	} printf("\033[0;34m%i controllers plugged in\n",gcc);
 
 	m_cT = 0; m_fps = 0; m_tempFPS = 0; m_lO = 0; // ??all necessary & syntax
 }
 void Frame::get_screen(int screen,SDL_Rect* dim_screen)
 {
 	if (screen<SDL_GetNumVideoDisplays()&&SDL_GetDisplayBounds(screen,dim_screen)==0)
-		printf("\033[1;36mframe resolution is set to: %ix%i\n",dim_screen->w,dim_screen->h);
+		printf("\033[1;36mmaximum resolution of selected screen is: %ix%i\n",dim_screen->w,dim_screen->h);
 	else {
 		printf("\033[1;31mscreen could not be set: %s\n",SDL_GetError());
 		printf("\033[1;36m\t=> falling back to standard configuration\n");

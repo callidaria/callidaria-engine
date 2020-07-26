@@ -5,6 +5,7 @@ v1.3.4			xx.xx.xxxx
 - every header cleaned (goal)
 - more features for more intuitive frame creation
 - multiple controller support
+- controller input optimization
 - mouse wheel support
 - eyecandy code (goal)
 
