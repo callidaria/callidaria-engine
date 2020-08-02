@@ -7,6 +7,7 @@ v1.3.4			xx.xx.xxxx
 - multiple controller support
 - controller input optimization
 - mouse wheel support
+- modernized shader class code
 - eyecandy code (goal)
 
 v1.3.3			12.5.2020

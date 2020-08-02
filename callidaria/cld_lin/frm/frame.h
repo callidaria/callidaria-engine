@@ -8,16 +8,14 @@
 #include <AL/alc.h>
 
 struct Keyboard { bool ka[1024] = { false }; };
-struct Mouse { bool mcl=false,mcr=false;int mx,my,mw; };
+struct Mouse { bool mcl=false,mcr=false;int mx,my,mw; }; // !!current mouse update not tested. should work though
 struct XBox { int xba[6];bool xbb[16] = { false }; };
-
-// please change controller relevant vars from stack to heap
 
 class Frame
 {
 public:
 	Frame(const char* title,int screen,bool fs);
-	Frame(const char* title,int width,int height,bool fs);
+	Frame(const char* title="callidaria-program",int width=1280,int height=720,bool fs=false);
 	Frame(const char* title,int screen,int width,int height,bool fs);
 
 	void clear(float cx,float cy,float cz); 	// clear the window

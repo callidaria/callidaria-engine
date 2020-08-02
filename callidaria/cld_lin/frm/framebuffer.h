@@ -1,61 +1,24 @@
 #pragma once
 
 #include <iostream>
+#include <GL/glew.h>
 #include "../gfx/shader.h"
 
 class FrameBuffer
 {
 public:
-	FrameBuffer() {  }
-	FrameBuffer(int fr_width, int fr_height, const char* vsp, const char* fsp, bool float_buffer)
-	{
-		// SETUP & BUFFER DATA
-		float verts[] = {
-			-1.0f,1.0f,0.0f,1.0f,
-			-1.0f,-1.0f,0.0f,0.0f,
-			1.0f,-1.0f,1.0f,0.0f,
-			-1.0f,1.0f,0.0f,1.0f,
-			1.0f,-1.0f,1.0f,0.0f,
-			1.0f,1.0f,1.0f,1.0f
-		};
-		glGenVertexArrays(1,&vao);
-		glGenBuffers(1,&vbo);
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER,vbo);
-		glBufferData(GL_ARRAY_BUFFER,sizeof(verts),&verts,GL_STATIC_DRAW);
-		sfb.compile2d(vsp,fsp);
+	FrameBuffer(); // !!trim down usages if possible
+	FrameBuffer(int fr_width, int fr_height, const char* vsp, const char* fsp, bool float_buffer);
 
-		// FRAMEBUFFER TEXTURE
-		glGenFramebuffers(1,&fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER,fbo);
-		glGenTextures(1,&tex);
-		glBindTexture(GL_TEXTURE_2D,tex);
-		if (float_buffer) glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA16F,fr_width,fr_height,0,GL_RGBA,GL_FLOAT,NULL);
-		else glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,fr_width,fr_height,0,GL_RGB,GL_UNSIGNED_BYTE,NULL);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D,0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,tex,0);
-		glGenRenderbuffers(1,&rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER,rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,fr_width,fr_height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,rbo);
-		glBindFramebuffer(GL_FRAMEBUFFER,0);
-	}
-	void bind() { glBindFramebuffer(GL_FRAMEBUFFER,fbo); }
-	void close() { glBindFramebuffer(GL_FRAMEBUFFER,0); }
-	void render()
-	{
-		glActiveTexture(GL_TEXTURE0);
-		sfb.enable();
-		glBindVertexArray(vao);
-		glBindTexture(GL_TEXTURE_2D,tex);
-		glDrawArrays(GL_TRIANGLES,0,6);
-	}
-	unsigned int get_fbo() { return fbo; }
-	unsigned int get_tex() { return tex; }
+	void bind(); 	// binds the framebuffer
+	void close(); 	// closes every framebuffer ??maybe get this into frame.h
+	void render(); 	// renders the framebuffer
+
+	//getters
+	unsigned int get_fbo(); // !!check if used
+	unsigned int get_tex(); // !!check if used
 private:
-	Shader sfb;
+	Shader s;
 	unsigned int tex,rbo;
 	unsigned int vao,vbo,fbo;
 };

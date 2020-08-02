@@ -86,8 +86,7 @@ int main(int argc,char** argv)
 		"res/skybox/bottom.jpg",
 		"res/skybox/front.jpg",
 		"res/skybox/back.jpg"
-	};
-	Cubemap cm = Cubemap(cmtex);
+	}; Cubemap cm = Cubemap(cmtex);
 
 	// PPE
 	Bloom blm = Bloom(&f);
@@ -95,7 +94,7 @@ int main(int argc,char** argv)
 	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
 
-	bgm.play();
+	//bgm.play();
 
 	bool run=true;while (run) {
 		f.vsync(60);f.input(run);
@@ -150,7 +149,7 @@ int main(int argc,char** argv)
 		cm.render();
 
 		//MSAA
-		//msaa.blit(&ifb);msaa.close();f.clear(0,0,0);ifb.render();
+		//msaa.blit(&ifb);msaa.close();f.clear(0.1f,0.1f,0.1f);msaa.render();
 		//blm.stop();blm.setup();f.clear(0,0,0);blm.render();
 		//ifb.close();f.clear(0,0,0);ifb.render();
 

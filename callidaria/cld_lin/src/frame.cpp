@@ -63,7 +63,7 @@ void Frame::input(bool &running)
 		if (m_fe.type==SDL_KEYUP&&m_fe.key.keysym.sym<1024) kb.ka[m_fe.key.keysym.sym] = false;
 
 		// read mouse input
-		SDL_GetMouseState(&mouse.mx,&mouse.my); // !!has to be tested
+		SDL_GetMouseState(&mouse.mx,&mouse.my);
 		mouse.mcl = m_fe.button.button==SDL_BUTTON_LEFT;
 		mouse.mcr = m_fe.button.button==SDL_BUTTON_RIGHT;
 		mouse.mw = m_fe.wheel.y;
@@ -125,7 +125,7 @@ void Frame::setup(const char* title,int x,int y,int width,int height,bool fs)
 		m_gc.push_back(SDL_GameControllerOpen(gcc));
 		xb.push_back(XBox()); // !!negative points for style ...maybe stack usage instead???
 		gcc++;
-	} printf("\033[0;34m%i controllers plugged in\n",gcc);
+	} printf("\033[0;34mcontrollers: %i plugged in\n",gcc);
 
 	m_cT = 0; m_fps = 0; m_tempFPS = 0; m_lO = 0; // ??all necessary & syntax
 }
