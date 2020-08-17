@@ -11,7 +11,7 @@ void Shader::compile(const char* vsp,const char* fsp)
 	m_shaderProgram = glCreateProgram();
 	glAttachShader(m_shaderProgram,vertexShader);
 	glAttachShader(m_shaderProgram,fragmentShader);
-	glBindFragDataLocation(m_shaderProgram,0,"outColour");
+	glBindFragDataLocation(m_shaderProgram,0,"outColour"); // !!make char pointer parameter for outColour
 	glLinkProgram(m_shaderProgram);
 	enable();
 }
@@ -48,15 +48,6 @@ void Shader::compile3d(const char* vspath,const char* fspath) // !!another clean
 	glEnableVertexAttribArray(btgAttrib);
 	glVertexAttribPointer(btgAttrib,3,GL_FLOAT,GL_FALSE,14*sizeof(float),(void*)(11*sizeof(float)));
 }
-void Shader::compile_skybox(const char* vspath,const char* fspath)
-{
-	compile(vspath,fspath);
-
-	// ??obsolete
-	int posAttrib = glGetAttribLocation(m_shaderProgram,"position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-}
 void Shader::load_index(unsigned int ibo) // !!index upload checking && double upload nessessary
 {
 	int offsetAttrib = glGetAttribLocation(m_shaderProgram,"offset");
@@ -86,6 +77,11 @@ void Shader::load_text(unsigned int ibo) // !!check for stupid shit
 	glVertexAttribDivisor(cursorAttrib,1);
 }
 void Shader::enable() { glUseProgram(m_shaderProgram); }
+void Shader::enable_location(const char* loc)
+{
+	int attrib = glGetAttribLocation(m_shaderProgram,loc);
+	glEnableVertexAttribArray(attrib);
+}
 unsigned int Shader::compile_shader(const char* path,GLenum stype) // ??int or enum !!unify with frame class
 {
 	// reads from source

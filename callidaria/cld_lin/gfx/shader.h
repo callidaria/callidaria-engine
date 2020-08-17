@@ -16,10 +16,10 @@ public:
 	void compile(const char* vspath, const char* fspath);
 	void compile2d(const char* vspath, const char* fspath);
 	void compile3d(const char* vspath,const char* fspath);
-	void compile_skybox(const char* vspath,const char* fspath);
 	void load_index(unsigned int ibo);
 	void load_text(unsigned int ibo);
 	void enable();
+	void enable_location(const char* loc);
 private:
 	unsigned int compile_shader(const char* path,GLenum stype);
 public:

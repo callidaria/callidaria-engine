@@ -20,7 +20,7 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",1,1280,720,false);
+	Frame f = Frame("callidaria",1,true);
 
 	// AUDIO
 	Listener listener=Listener();
@@ -70,22 +70,24 @@ int main(int argc,char** argv)
 	FrameBuffer ifb=FrameBuffer(f.w_res,f.h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader",false);
 
 	// TEXT
-	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",30,30);Text tft=Text(&fnt);
-	tft.add("callidaria FRAMEWORK",glm::vec2(20,940));
-	tft.add("this is a test",glm::vec2(20,1040));
-	tft.add("lorem Ipsum",glm::vec2(20,1020));
-	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(20,1000));
-	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(20,980));
-	tft.load_wcam(&cam2d);tft.load_text();
+	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",30,30);
+	Text tft=Text(&fnt);
+	tft.add("callidaria FRAMEWORK",glm::vec2(20,660));
+	tft.add("this is a test",glm::vec2(20,630));
+	tft.add("lorem Ipsum",glm::vec2(20,600));
+	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(20,570));
+	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(20,540));
+	tft.load_wcam(&cam2d);
+	tft.load_text();
 
 	// CUBEMAP
 	std::vector<const char*> cmtex = {
-		"res/skybox/right.jpg",
-		"res/skybox/left.jpg",
-		"res/skybox/top.jpg",
-		"res/skybox/bottom.jpg",
-		"res/skybox/front.jpg",
-		"res/skybox/back.jpg"
+		"res/cloudy/graycloud_rt.jpg",
+		"res/cloudy/graycloud_lf.jpg",
+		"res/cloudy/graycloud_up.jpg",
+		"res/cloudy/graycloud_dn.jpg",
+		"res/cloudy/graycloud_ft.jpg",
+		"res/cloudy/graycloud_bk.jpg"
 	}; Cubemap cm = Cubemap(cmtex);
 
 	// PPE
