@@ -4,7 +4,7 @@
  *	!!! ADD OUTPUT INFORMATION ABOUT SYSTEM !!!
  *	ALSO MAYBE IMPLEMENT WITH VIEWPORT RIGHT FROM THE BEGINNING ?
  * */
-Frame::Frame(const char* title,int screen,bool fs)
+Frame::Frame(const char* title,int screen,SDL_WindowFlags fs)
 {
 	init();
 
@@ -15,13 +15,13 @@ Frame::Frame(const char* title,int screen,bool fs)
 	h_res = dim_screen.h;
 	setup(title,dim_screen.x,dim_screen.y,dim_screen.w,dim_screen.h,fs);
 }
-Frame::Frame(const char* title,int width,int height,bool fs)
+Frame::Frame(const char* title,int width,int height,SDL_WindowFlags fs)
 	: w_res(width),h_res(height)
 {
 	init();
 	setup(title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,fs);
 }
-Frame::Frame(const char* title,int screen,int width,int height,bool fs)
+Frame::Frame(const char* title,int screen,int width,int height,SDL_WindowFlags fs)
 	: w_res(width),h_res(height)
 {
 	init();
@@ -99,14 +99,14 @@ void Frame::init()
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3); // ??flexible support for older versions later
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
 }
-void Frame::setup(const char* title,int x,int y,int width,int height,bool fs)
+void Frame::setup(const char* title,int x,int y,int width,int height,SDL_WindowFlags fs)
 {
 	// creating window
-	if (fs) m_frame = SDL_CreateWindow(title,x,y,width,height,SDL_WINDOW_OPENGL|SDL_WINDOW_FULLSCREEN);
-	else m_frame = SDL_CreateWindow(title,x,y,width,height,SDL_WINDOW_OPENGL); // ??looks awful w/ differentiation
+	m_frame = SDL_CreateWindow(title,x,y,width,height,SDL_WINDOW_OPENGL);
+	SDL_SetWindowFullscreen(m_frame,fs);
 	m_context = SDL_GL_CreateContext(m_frame);
 
 	// opengl setup

@@ -20,7 +20,7 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",1,true);
+	Frame f = Frame("callidaria",1,SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	// AUDIO
 	Listener listener=Listener();
@@ -41,15 +41,15 @@ int main(int argc,char** argv)
 	r3d.add("res/floor.obj","res/mat/pav_stones/alb.jpg","res/mat/pav_stones/disp.jpg",
 			"res/mat/pav_stones/norm.jpg","res/black.png",glm::vec3(0,0,0),2.5f,glm::vec3(0,0,0));
 	r3d.add("res/nsphere.obj","res/mat/marble/alb.jpg","res/mat/marble/disp.jpg","res/mat/marble/norm.jpg",
-			"res/black.png",glm::vec3(4,3,-5),1,glm::vec3(0,0,0));
+			"res/black.png",glm::vec3(0,0,0),1,glm::vec3(0,0,0));
 	r3d.add("res/nsphere.obj","res/mat/wood/alb.jpg","res/mat/wood/rough.jpg","res/mat/wood/norm.jpg",
-			"res/black.png",glm::vec3(-2.3f,5.5f,-3),1,glm::vec3(0,0,0));
+			"res/black.png",glm::vec3(0,0,0),1,glm::vec3(0,0,0));
 	r3d.add("res/nsphere.obj","res/mat/metal/alb.jpg","res/mat/metal/disp.jpg","res/mat/metal/norm.jpg",
-			"res/black.png",glm::vec3(0,2,0),1,glm::vec3(0,0,0));
+			"res/black.png",glm::vec3(0,0,0),1,glm::vec3(0,0,0));
 
 	// CAMERAS
 	Camera2D cam2d=Camera2D(1920.0f,1080.0f);
-	Camera3D cam3d=Camera3D(glm::vec3(-4,4,-7),1920.0f,1080.0f,90.0f);
+	Camera3D cam3d=Camera3D(glm::vec3(4,5,-9.5f),1920.0f,1080.0f,90.0f);
 	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
 
 	// TERRAIN
@@ -57,7 +57,8 @@ int main(int argc,char** argv)
 
 	// LIGHTS
 	Light3D l0=Light3D(&r3d,0,glm::vec3(-200,100,-250),glm::vec3(1,1,1),1);
-	l0.upload();l0.set_amnt(1);
+	//Light3D l1=Light3D(&r3d,0,glm::vec3(200,-100,250),glm::vec3(1,1,1),0.2f);
+	l0.upload();l0.set_amnt(1);//l1.upload();l0.set_amnt(2);
 	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
 	// MATERIALS
@@ -65,9 +66,10 @@ int main(int argc,char** argv)
 	Material3D m1=Material3D(&r3d,1,64,2.0f);
 
 	// POST PROCESSING
-	Bloom bloom=Bloom(&f);
+	Bloom blm=Bloom(&f);
 	MSAA msaa=MSAA("shader/fbv_standard.shader","shader/fbf_standard.shader",16);
 	FrameBuffer ifb=FrameBuffer(f.w_res,f.h_res,"shader/fbv_standard.shader","shader/fbf_standard.shader",false);
+	Blur blr = Blur(&f);
 
 	// TEXT
 	Font fnt=Font("res/fonts/nimbus_roman.fnt","res/fonts/nimbus_roman.png",30,30);
@@ -90,23 +92,21 @@ int main(int argc,char** argv)
 		"res/cloudy/graycloud_bk.jpg"
 	}; Cubemap cm = Cubemap(cmtex);
 
-	// PPE
-	Bloom blm = Bloom(&f);
-
-	float pitch=0;float yaw=45.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
+	float pitch=-25;float yaw=120.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
 
 	//bgm.play();
+	
+	glm::vec3 pos_arr[3] = { glm::vec3(4,12,-5),glm::vec3(-2.3f,22,-3),glm::vec3(0,8,0) };
+	glm::vec3 mnt_arr[3] = { glm::vec3(0),glm::vec3(0),glm::vec3(0) };
 
 	bool run=true;while (run) {
 		f.vsync(60);f.input(run);
 
 		// INPUT
 		if (f.kb.ka[SDLK_ESCAPE]) break;
-		if (f.mouse.mcl) {
-			pitch+=(f.mouse.my-lfy)*-0.1f;
-			yaw+=(f.mouse.mx-lfx)*0.1f;
-		} lfx=f.mouse.mx;lfy=f.mouse.my;
+		if (f.mouse.mcl) { pitch+=(f.mouse.my-lfy)*-0.1f;yaw+=(f.mouse.mx-lfx)*0.1f; }
+		lfx=f.mouse.mx;lfy=f.mouse.my;
 		if (f.kb.ka[SDLK_i]) pitch+=1.0f;
 		else if (f.kb.ka[SDLK_k]) pitch-=1.0f;
 		if (f.kb.ka[SDLK_j]) yaw-=1.0f;
@@ -122,28 +122,46 @@ int main(int argc,char** argv)
 		if (f.kb.ka[SDLK_r]) cam3d.pos+=0.05f*cam3d.up;
 		else if (f.kb.ka[SDLK_f]) cam3d.pos-=0.05f*cam3d.up;
 
-		for (int i=0;i<f.xb.size();i++) {
-			if (f.xb.at(i).xbb[SDL_CONTROLLER_BUTTON_A]) printf("\033[0mbutton a%i pressed\n",i);
-			if (f.xb.at(i).xba[SDL_CONTROLLER_AXIS_TRIGGERRIGHT]>1000)
-				printf("\033[0mtrigger%i casted\n",i);
+		// PHYSICS PROTOTYPE
+		for (int i=0;i<3;i++) {
+			for (int j=i+1;j<3;j++) {
+				if (glm::length(pos_arr[i]-pos_arr[j])<2)
+					printf("%i collided with %i\n",i,j);
+			} if (pos_arr[i].y-1<0) {
+				pos_arr[i].y = 1;
+				mnt_arr[i].y = mnt_arr[i].y*-0.85f;
+			} mnt_arr[i].y -= 0.0135f;
+			pos_arr[i] += mnt_arr[i];
 		}
+		glm::mat4 mat_arr[3] = {
+			glm::translate(glm::mat4(1.0f),pos_arr[0]),
+			glm::translate(glm::mat4(1.0f),pos_arr[1]),
+			glm::translate(glm::mat4(1.0f),pos_arr[2])
+		};
 
 		// SHADOW
 		l0.prepare_shadow();
-		m1.upload();r3d.render_mesh(2,5);
+		m1.upload();
+		r3d.upload_model(mat_arr[0]);r3d.render_mesh(2,3);
+		r3d.upload_model(mat_arr[1]);r3d.render_mesh(3,4);
+		r3d.upload_model(mat_arr[2]);r3d.render_mesh(4,5);
 		l0.close_shadow(f.w_res,f.h_res);
 
 		// RENDER
 		//msaa.bind();
 		//blm.bloom();
 		//ifb.bind();
+		//blr.blur();
 		f.clear(0.1f,0.1f,0.1f);
 		glCullFace(GL_BACK);
 		r3d.prepare_wcam(&cam3d);
 		l0.upload_shadow();
 		cm.set_cubemap();
-		m0.upload();r3d.render_mesh(1,2);
-		m1.upload();r3d.render_mesh(2,5);
+		m0.upload();r3d.upload_model(glm::mat4(1.0f));r3d.render_mesh(1,2);
+		m1.upload();
+		r3d.upload_model(mat_arr[0]);r3d.render_mesh(2,3);
+		r3d.upload_model(mat_arr[1]);r3d.render_mesh(3,4);
+		r3d.upload_model(mat_arr[2]);r3d.render_mesh(4,5);
 
 		// SKYBOX
 		glDisable(GL_CULL_FACE);
@@ -151,6 +169,7 @@ int main(int argc,char** argv)
 		cm.render();
 
 		//MSAA
+		//blr.stop();f.clear(0.1f,0.1f,0.1f);blr.render();
 		//msaa.blit(&ifb);msaa.close();f.clear(0.1f,0.1f,0.1f);msaa.render();
 		//blm.stop();blm.setup();f.clear(0,0,0);blm.render();
 		//ifb.close();f.clear(0,0,0);ifb.render();

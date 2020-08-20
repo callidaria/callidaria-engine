@@ -14,9 +14,10 @@ struct XBox { int xba[6];bool xbb[16] = { false }; };
 class Frame
 {
 public:
-	Frame(const char* title,int screen,bool fs);
-	Frame(const char* title="callidaria-program",int width=1280,int height=720,bool fs=false);
-	Frame(const char* title,int screen,int width,int height,bool fs);
+	Frame(const char* title,int screen,SDL_WindowFlags fs);
+	Frame(const char* title="callidaria-program",int width=1280,int height=720,
+			SDL_WindowFlags fs=(SDL_WindowFlags)0);
+	Frame(const char* title,int screen,int width,int height,SDL_WindowFlags fs);
 
 	void clear(float cx,float cy,float cz); 	// clear the window
 	void update(); 					// update the window
@@ -25,7 +26,7 @@ public:
 	void vanish(); 					// close program
 private:
 	void init();
-	void setup(const char* title,int x,int y,int width,int height,bool fs);
+	void setup(const char* title,int x,int y,int width,int height,SDL_WindowFlags fs);
 	void get_screen(int screen,SDL_Rect* dim_screen);
 public:
 	Keyboard kb; Mouse mouse; std::vector<XBox> xb;		// input device
