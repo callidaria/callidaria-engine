@@ -1,4 +1,5 @@
 v1.3.4			xx.xx.xxxx
+- multiplayer feature
 - every line of code complete renewed (goal)
 - giant mem leak fix (goal)
 - giant performance improvement

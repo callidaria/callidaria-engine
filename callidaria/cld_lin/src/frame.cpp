@@ -59,8 +59,9 @@ void Frame::input(bool &running)
 		running = m_fe.type!=SDL_QUIT; // exit the program when closing is requested
 
 		// read keyboard input
-		if (m_fe.type==SDL_KEYDOWN&&m_fe.key.keysym.sym<1024) kb.ka[m_fe.key.keysym.sym] = true;
-		if (m_fe.type==SDL_KEYUP&&m_fe.key.keysym.sym<1024) kb.ka[m_fe.key.keysym.sym] = false;
+		// ??are scancodes slower that sdlks
+		if (m_fe.type==SDL_KEYDOWN) kb.ka[m_fe.key.keysym.scancode] = true;
+		if (m_fe.type==SDL_KEYUP) kb.ka[m_fe.key.keysym.scancode] = false;
 
 		// read mouse input
 		SDL_GetMouseState(&mouse.mx,&mouse.my);

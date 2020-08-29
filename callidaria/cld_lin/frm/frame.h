@@ -7,7 +7,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <AL/alc.h>
 
-struct Keyboard { bool ka[1024] = { false }; };
+struct Keyboard { bool ka[285] = { false }; };
 struct Mouse { bool mcl=false,mcr=false;int mx,my,mw; }; // !!current mouse update not tested. should work though
 struct XBox { int xba[6];bool xbb[16] = { false }; };
 

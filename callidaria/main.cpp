@@ -20,7 +20,7 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",1,SDL_WINDOW_FULLSCREEN_DESKTOP);
+	Frame f = Frame("callidaria",0,SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	// AUDIO
 	Listener listener=Listener();
@@ -104,23 +104,25 @@ int main(int argc,char** argv)
 		f.vsync(60);f.input(run);
 
 		// INPUT
-		if (f.kb.ka[SDLK_ESCAPE]) break;
+		if (f.kb.ka[SDL_SCANCODE_ESCAPE]) break;
 		if (f.mouse.mcl) { pitch+=(f.mouse.my-lfy)*-0.1f;yaw+=(f.mouse.mx-lfx)*0.1f; }
 		lfx=f.mouse.mx;lfy=f.mouse.my;
-		if (f.kb.ka[SDLK_i]) pitch+=1.0f;
-		else if (f.kb.ka[SDLK_k]) pitch-=1.0f;
-		if (f.kb.ka[SDLK_j]) yaw-=1.0f;
-		else if (f.kb.ka[SDLK_l]) yaw+=1.0f;
+
+		if (f.kb.ka[SDL_SCANCODE_I]) pitch+=1.0f;
+		else if (f.kb.ka[SDL_SCANCODE_K]) pitch-=1.0f;
+		if (f.kb.ka[SDL_SCANCODE_J]) yaw-=1.0f;
+		else if (f.kb.ka[SDL_SCANCODE_L]) yaw+=1.0f;
 		cam3d.front.x=cos(glm::radians(pitch))*cos(glm::radians(yaw));
 		cam3d.front.y=sin(glm::radians(pitch));
 		cam3d.front.z=cos(glm::radians(pitch))*sin(glm::radians(yaw));
 		cam3d.front=glm::normalize(cam3d.front);
-		if (f.kb.ka[SDLK_w]) cam3d.pos+=0.05f*cam3d.front;
-		else if (f.kb.ka[SDLK_s]) cam3d.pos-=0.05f*cam3d.front;
-		if (f.kb.ka[SDLK_a]) cam3d.pos-=0.05f*glm::normalize(glm::cross(cam3d.front,cam3d.up));
-		else if (f.kb.ka[SDLK_d]) cam3d.pos+=0.05f*glm::normalize(glm::cross(cam3d.front,cam3d.up));
-		if (f.kb.ka[SDLK_r]) cam3d.pos+=0.05f*cam3d.up;
-		else if (f.kb.ka[SDLK_f]) cam3d.pos-=0.05f*cam3d.up;
+
+		if (f.kb.ka[SDL_SCANCODE_W]) cam3d.pos+=0.05f*cam3d.front;
+		else if (f.kb.ka[SDL_SCANCODE_S]) cam3d.pos-=0.05f*cam3d.front;
+		if (f.kb.ka[SDL_SCANCODE_A]) cam3d.pos-=0.05f*glm::normalize(glm::cross(cam3d.front,cam3d.up));
+		else if (f.kb.ka[SDL_SCANCODE_D]) cam3d.pos+=0.05f*glm::normalize(glm::cross(cam3d.front,cam3d.up));
+		if (f.kb.ka[SDL_SCANCODE_R]) cam3d.pos+=0.05f*cam3d.up;
+		else if (f.kb.ka[SDL_SCANCODE_F]) cam3d.pos-=0.05f*cam3d.up;
 
 		// PHYSICS PROTOTYPE
 		for (int i=0;i<3;i++) {
