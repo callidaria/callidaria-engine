@@ -9,8 +9,7 @@ Text::Text(Font* f)
 }
 int Text::add(char c,glm::vec2 p) // !!passing x increment like this is very bad pracice with public method
 {
-	// position && sprite sheet identification
-	o[ind] = p;
+	// identifying sprite sheet position
 	int i = 0;
 	while (i<96) { // ??maybe alternate iteration until correct index that is more performant
 		if (font->id[i]==(int)c) break;
@@ -18,15 +17,12 @@ int Text::add(char c,glm::vec2 p) // !!passing x increment like this is very bad
 	}
 	
 	// character information write
-	x[ind] = font->x[i]; // ??less reserved arrays with bitshifted dataclusters
-	y[ind] = font->y[i];
-	w[ind] = font->wdt[i];
-	h[ind] = font->hgt[i];
-	xo[ind] = font->xo[i];
-	yo[ind] = font->yo[i];
-	ind++;
+	ibv[ind] = p.x;ind++;ibv[ind] = p.y;ind++;
+	ibv[ind] = font->x[i];ind++;ibv[ind] = font->y[i];ind++;
+	ibv[ind] = font->wdt[i];ind++;ibv[ind] = font->hgt[i];ind++;
+	ibv[ind] = font->xo[i];ind++;ibv[ind] = font->yo[i];ind++;
 
-	return font->xa[i]*(font->mw/83.0f); // ??do this with a vec2 pointer maybe
+	return font->xa[i]*(font->mw/83.0f); // ??do this with a vec2 pointer maybe & also with dynamic texdiv
 }
 void Text::add(const char* s,glm::vec2 p) // this function is actually good ...i'm surprised
 {
@@ -50,19 +46,6 @@ void Text::load_wcam(Camera2D* c)
 	sT.upload_float("wdt",font->mw);
 	sT.upload_matrix("view",c->view2D); // !!please use a presetted camera matrix with static viewport for text
 	sT.upload_matrix("proj",c->proj2D);
-}
-void Text::load_text() // ??another seperate loading method
-{
-	for (int i=0;i<ind;i++) { // ??why not natively write to this array. will fix all problems ?!?!?!
-		ibv[i*8] = o[i].x;
-		ibv[i*8+1] = o[i].y;
-		ibv[i*8+2] = x[i];
-		ibv[i*8+3] = y[i];
-		ibv[i*8+4] = w[i];
-		ibv[i*8+5] = h[i];
-		ibv[i*8+6] = xo[i];
-		ibv[i*8+7] = yo[i];
-	} // big chunky useless bullshit. please clean !
 }
 void Text::prepare()
 {

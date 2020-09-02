@@ -80,7 +80,6 @@ int main(int argc,char** argv)
 	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(20,570));
 	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(20,540));
 	tft.load_wcam(&cam2d);
-	tft.load_text();
 
 	// CUBEMAP
 	std::vector<const char*> cmtex = {

@@ -1,15 +1,16 @@
 v1.3.4			xx.xx.xxxx
-- multiplayer feature
+- multiplayer support
 - every line of code complete renewed (goal)
 - giant mem leak fix (goal)
 - giant performance improvement
 - usability improvement (goal)
 - every header cleaned (goal)
 - more features for more intuitive frame creation
+- much faster text loading time
 - multiple controller support
 - controller input optimization
 - mouse wheel support
-- modernized shader class code
+- modernized shader class code (goal)
 - eyecandy code (goal)
 
 v1.3.3			12.5.2020
