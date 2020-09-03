@@ -55,7 +55,9 @@ void Frame::vsync(unsigned int mf)
 }
 void Frame::input(bool &running)
 {
+	event_active = false;
 	while (SDL_PollEvent(&m_fe)) {
+		event_active = true;
 		running = m_fe.type!=SDL_QUIT; // exit the program when closing is requested
 
 		// read keyboard input
@@ -65,8 +67,8 @@ void Frame::input(bool &running)
 
 		// read mouse input
 		SDL_GetMouseState(&mouse.mx,&mouse.my);
-		mouse.mcl = m_fe.button.button==SDL_BUTTON_LEFT;
-		mouse.mcr = m_fe.button.button==SDL_BUTTON_RIGHT;
+		mouse.mcl = m_fe.button.button==SDL_BUTTON_LEFT&&m_fe.type==SDL_MOUSEBUTTONDOWN;
+		mouse.mcr = m_fe.button.button==SDL_BUTTON_RIGHT&&m_fe.type==SDL_MOUSEBUTTONDOWN;
 		mouse.mw = m_fe.wheel.y;
 
 		// read controller input

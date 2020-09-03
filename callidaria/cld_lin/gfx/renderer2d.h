@@ -109,7 +109,6 @@ public:
 	void upload_tindex(glm::vec2 v) { s2d.upload_vec2("i_tex",v); }
 private:
 	unsigned int vao,vbo,ebo;
-public:
 	Shader s2d;
 	std::vector<Sprite> sl;
 	std::vector<Anim> al;

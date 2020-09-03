@@ -29,6 +29,7 @@ private:
 	void setup(const char* title,int x,int y,int width,int height,SDL_WindowFlags fs);
 	void get_screen(int screen,SDL_Rect* dim_screen);
 public:
+	bool event_active = false;
 	Keyboard kb; Mouse mouse; std::vector<XBox> xb;		// input device
 	int w_res, h_res;					// window dimensions
 private:

@@ -13,6 +13,7 @@
 class Text
 {
 public:
+	Text();
 	Text(Font* f);
 	int add(char c,glm::vec2 p);
 	void add(const char* s,glm::vec2 p);

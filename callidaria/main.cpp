@@ -20,7 +20,7 @@
 
 int main(int argc,char** argv)
 {
-	Frame f = Frame("callidaria",0,SDL_WINDOW_FULLSCREEN_DESKTOP);
+	Frame f = Frame("callidaria",0,1280,720,(SDL_WindowFlags)0);
 
 	// AUDIO
 	Listener listener=Listener();

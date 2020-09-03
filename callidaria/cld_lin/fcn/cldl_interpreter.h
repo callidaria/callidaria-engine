@@ -22,4 +22,6 @@ public:
 private:
 	Renderer2D* m_r2d;
 	Text* m_txt;
+public:
+	int spritesCount,charsCount;
 };
