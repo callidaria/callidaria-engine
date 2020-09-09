@@ -13,6 +13,7 @@
 #include "cld_lin/ppe/msaa.h"
 #include "cld_lin/ppe/bloom.h"
 #include "cld_lin/fcn/text.h"
+#include "cld_lin/fcn/text_field.h"
 #include "cld_lin/aud/audio.h"
 #include "cld_lin/aud/listener.h"
 #include "cld_lin/fcn/terrain.h"
@@ -48,9 +49,9 @@ int main(int argc,char** argv)
 			"res/black.png",glm::vec3(0,0,0),1,glm::vec3(0,0,0));
 
 	// CAMERAS
-	Camera2D cam2d=Camera2D(1920.0f,1080.0f);
+/*	Camera2D cam2d=Camera2D(1920.0f,1080.0f);
 	Camera3D cam3d=Camera3D(glm::vec3(4,5,-9.5f),1920.0f,1080.0f,90.0f);
-	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);
+	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);r3d.load(&cam3d);*/
 
 	// TERRAIN
 	//Terrain trn = Terrain(&cam3d,glm::vec3(-250,0,-250),500,500,"res/trntex.jpg","res/heightmap.bmp",25);
@@ -58,8 +59,8 @@ int main(int argc,char** argv)
 	// LIGHTS
 	Light3D l0=Light3D(&r3d,0,glm::vec3(-200,100,-250),glm::vec3(1,1,1),1);
 	//Light3D l1=Light3D(&r3d,0,glm::vec3(200,-100,250),glm::vec3(1,1,1),0.2f);
-	l0.upload();l0.set_amnt(1);//l1.upload();l0.set_amnt(2);
-	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
+	//l0.upload();l0.set_amnt(1);//l1.upload();l0.set_amnt(2);
+	//l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
 	// MATERIALS
 	Material3D m0=Material3D(&r3d,3,8,0.25f);
@@ -79,7 +80,7 @@ int main(int argc,char** argv)
 	tft.add("lorem Ipsum",glm::vec2(20,600));
 	tft.add("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPp",glm::vec2(20,570));
 	tft.add("QqRrSsTtUuVvWwXxYyZz",glm::vec2(20,540));
-	tft.load_wcam(&cam2d);
+	TextField tf = TextField(&fnt,&r2d,glm::vec2(200,100),"./res/weight.png",glm::vec2(190,90),500,50);
 
 	// CUBEMAP
 	std::vector<const char*> cmtex = {
@@ -90,6 +91,13 @@ int main(int argc,char** argv)
 		"res/cloudy/graycloud_ft.jpg",
 		"res/cloudy/graycloud_bk.jpg"
 	}; Cubemap cm = Cubemap(cmtex);
+
+	// CAMERAS
+	Camera2D cam2d=Camera2D(1920.0f,1080.0f);
+	Camera3D cam3d=Camera3D(glm::vec3(4,5,-9.5f),1920.0f,1080.0f,90.0f);
+	r2d.load_wcam(&cam2d);ri.load_wcam(&cam2d);tft.load_wcam(&cam2d);r3d.load(&cam3d);
+	l0.upload();l0.set_amnt(1);
+	l0.create_shadow(glm::vec3(0,0,0),50,50,5,4096);
 
 	float pitch=-25;float yaw=120.0f;int lfx,lfy;glm::mat4 ml=glm::mat4(1.0f);
 	int flow_tex=0;
@@ -180,6 +188,8 @@ int main(int argc,char** argv)
 
 		tft.prepare();
 		tft.render(92,glm::vec4(0,0,0,1));
+
+		tf.render(&f,&cam2d,glm::vec4(1,0,0,1));
 
 		f.update();
 	}

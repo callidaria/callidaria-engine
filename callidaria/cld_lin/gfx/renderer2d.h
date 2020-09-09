@@ -15,16 +15,18 @@ public:
 		glGenVertexArrays(1,&vao);
 		glGenBuffers(1,&vbo); glGenBuffers(1,&ebo);
 	}
-	void add(glm::vec2 p,float w,float h,const char* t)
+	int add(glm::vec2 p,float w,float h,const char* t)
 	{
 		Sprite proc = Sprite(p,w,h,t);
 		sl.push_back(proc);
+		return sl.size()-1; // less CPU expensive without sub
 	}
-	void add(glm::vec2 p,float w,float h,const char* t,unsigned int r,unsigned int c,unsigned int f,
+	int add(glm::vec2 p,float w,float h,const char* t,unsigned int r,unsigned int c,unsigned int f,
 			unsigned int itn)
 	{
 		Anim proc = Anim(p,w,h,t,r,c,f,itn);
 		al.push_back(proc);
+		return al.size()-1;
 	}
 	void load_vertex()
 	{
