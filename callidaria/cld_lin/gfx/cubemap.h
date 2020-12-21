@@ -14,7 +14,7 @@ public:
 	void set_cubemap();
 	void render();
 private:
-	unsigned int vao,vbo,tex;
+	unsigned int vao,vbo;unsigned int tex = 0; // §§yet another try to fix this bullshit valgrind error. fuck you
 public:
 	Shader s;
 };

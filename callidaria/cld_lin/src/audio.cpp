@@ -9,8 +9,8 @@ Audio::Audio(const char* path,float gain,float pitch,glm::vec3 pos,glm::vec3 vel
 	// some variables
 	FILE* file = fopen(path,"rb"); // see if file exists
 	char type[4];
-	unsigned long size,cSize,rate,abps,dSize;
-	short fType,ch,bps,bips;
+	unsigned long size=0;unsigned long cSize=0;unsigned long rate=0;unsigned long abps=0;unsigned long dSize=0;
+	short fType=0;short ch=0;short bps=0;short bips=0;
 
 	// read audio
 	fread(type,sizeof(char),4,file);
@@ -40,7 +40,7 @@ Audio::Audio(const char* path,float gain,float pitch,glm::vec3 pos,glm::vec3 vel
 		if (ch == 1) format = AL_FORMAT_MONO16;
 		else if (ch == 2) format = AL_FORMAT_STEREO16;
 	} alBufferData(m_buffer,format,xbuffer,dSize,rate);
-	delete[] xbuffer;
+	delete[] xbuffer; // ??kill
 
 	// setting audio parameters
 	alSourcei(m_audio,AL_BUFFER,m_buffer);

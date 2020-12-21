@@ -23,6 +23,6 @@ public:
 	void render(int amnt,glm::vec4 col);
 private:
 	Shader sT;Font* font;
-	unsigned int vao,vbo,ibo,ind;
-	float ibv[8*MAX_CHAR_COUNT];
+	unsigned int vao,vbo,ibo;unsigned int ind = 0; // §§valgrind fix prototype
+	float ibv[8*MAX_CHAR_COUNT] = { 0 }; // §§valgrind fix prototype
 };

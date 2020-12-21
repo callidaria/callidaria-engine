@@ -1,8 +1,10 @@
-v1.3.4			xx.xx.xxxx
+v1.4.0			xx.xx.xxxx
 - multiplayer support
 - every line of code complete renewed (goal)
 - giant mem leak fix (goal)
 - giant performance improvement
+- more dynamic windows/linux port (goal)
+- vulkan support for every feature (goal)
 - usability improvement (goal)
 - every header cleaned (goal)
 - more features for more intuitive frame creation

@@ -6,7 +6,7 @@ Cubemap::Cubemap(std::vector<const char*> tp) // !!description && maybe stack ?
 	glGenVertexArrays(1,&vao);
 	glGenBuffers(1,&vbo);
 	glGenTextures(1,&tex);
-	glBindVertexArray(vao);
+	glBindVertexArray(vao); // ??needed
 
 	// buffer data
 	float verts[] = {
@@ -16,9 +16,9 @@ Cubemap::Cubemap(std::vector<const char*> tp) // !!description && maybe stack ?
 		-1.0f,-1.0f,1.0f,-1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,-1.0f,1.0f,-1.0f,-1.0f,1.0f,
 		-1.0f,1.0f,-1.0f,1.0f,1.0f,-1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,-1.0f,1.0f,1.0f,-1.0f,1.0f,-1.0f,
 		-1.0f,-1.0f,-1.0f,-1.0f,-1.0f,1.0f,1.0f,-1.0f,-1.0f,1.0f,-1.0f,-1.0f,-1.0f,-1.0f,1.0f,1.0f,-1.0f,1.0f
-	};
-	glBindBuffer(GL_ARRAY_BUFFER,vbo);
-	glBufferData(GL_ARRAY_BUFFER,sizeof(verts),&verts,GL_STATIC_DRAW);
+	}; glBindBuffer(GL_ARRAY_BUFFER,vbo);
+	// !!line causes weird valgrind error
+	glBufferData(GL_ARRAY_BUFFER,sizeof(verts),verts,GL_STATIC_DRAW); // §§killed adressor trying to fix valgrind
 
 	// shader compile
 	s.compile("shader/vertex_skybox.shader","shader/fragment_skybox.shader");
@@ -30,7 +30,9 @@ Cubemap::Cubemap(std::vector<const char*> tp) // !!description && maybe stack ?
 	int width,height;
 	for (int i = 0; i < tp.size(); i++) {
 		unsigned char* image = SOIL_load_image(tp.at(i),&width,&height,0,SOIL_LOAD_RGB);
+		// !!line causes memory leak and fucks up all possible subsequent texloads AND IT IS SO ANNOYING
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGB,width,height,0,GL_RGB,GL_UNSIGNED_BYTE,image);
+		// ??is mipmapping maybe a good idea
 		SOIL_free_image_data(image);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);

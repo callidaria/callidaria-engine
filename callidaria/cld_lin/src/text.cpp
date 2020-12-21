@@ -16,10 +16,9 @@ int Text::add(char c,glm::vec2 p) // !!passing x increment like this is very bad
 		if (font->id[i]==(int)c) break;
 		i++;
 	}
-	
+
 	// character information write
-	ibv[ind] = p.x;ind++;ibv[ind] = p.y;ind++;
-	ibv[ind] = font->x[i];ind++;ibv[ind] = font->y[i];ind++;
+	ibv[ind] = p.x;ind++;ibv[ind] = p.y;ind++;ibv[ind] = font->x[i];ind++;ibv[ind] = font->y[i];ind++;
 	ibv[ind] = font->wdt[i];ind++;ibv[ind] = font->hgt[i];ind++;
 	ibv[ind] = font->xo[i];ind++;ibv[ind] = font->yo[i];ind++;
 
@@ -38,7 +37,7 @@ void Text::load_vertex() // !!no need to have this extra public vertex load func
 	glBindBuffer(GL_ARRAY_BUFFER,vbo);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(font->v),font->v,GL_STATIC_DRAW);
 }
-void Text::load_wcam(Camera2D* c)
+void Text::load_wcam(Camera2D* c) // !!trim down to naturalistic loading syntax
 {
 	load_vertex();
 	sT.compile2d("shader/vertex_text.shader","shader/fragment_text.shader");
