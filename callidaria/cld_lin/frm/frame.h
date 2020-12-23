@@ -57,6 +57,9 @@ private:
 	SwapChainDetails get_qSwapChainSupport(VkPhysicalDevice gpu);
 	std::vector<char> readShader(const std::string &path);
 	VkShaderModule createShader(const std::vector<char> &source);
+	void init_buffer(size_t bSize,VkBufferUsageFlags uFlags,VkMemoryPropertyFlags pFlags,
+			VkDeviceMemory &bMemory,VkBuffer &buffer);
+	void cpy_buffer(VkBuffer src,VkBuffer dst,size_t size);
 #endif
 public:
 	Keyboard kb; Mouse mouse; std::vector<XBox> xb;		// input device

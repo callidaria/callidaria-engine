@@ -562,37 +562,29 @@ void Frame::setup(const char* title,int x,int y,int width,int height,SDL_WindowF
 			printf("framebuffer creation broke at index %i\n",i);
 	}
 
-	// command pool & buffers
+	// command pool
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = gpu_fi.gfxFamily.value();
 	if (vkCreateCommandPool(m_logicalGPU,&poolInfo,nullptr,&m_commandPool)!=VK_SUCCESS) printf("pool broke\n");
 
-	VkBufferCreateInfo bufferInfo{};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(vertices[0])*15;
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	if (vkCreateBuffer(m_logicalGPU,&bufferInfo,nullptr,&vbo)!=VK_SUCCESS) printf("vbo broke\n");
-	VkMemoryRequirements memReq;
-	vkGetBufferMemoryRequirements(m_logicalGPU,vbo,&memReq);
-	VkPhysicalDeviceMemoryProperties memProp;
-	vkGetPhysicalDeviceMemoryProperties(m_gpu,&memProp);
-	VkMemoryPropertyFlags props = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	uint32_t memType;for (int i=0;i<memProp.memoryTypeCount;i++) {
-		if (memReq.memoryTypeBits&(1<<i)
-			&&(memProp.memoryTypes[i].propertyFlags&props)==props) { memType=i;break; }
-	} VkMemoryAllocateInfo mallocInfo{};
-	mallocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	mallocInfo.allocationSize = memReq.size;
-	mallocInfo.memoryTypeIndex = memType;
-	if (vkAllocateMemory(m_logicalGPU,&mallocInfo,nullptr,&m_vboMem)!=VK_SUCCESS) printf("vbo mem broke\n");
-	vkBindBufferMemory(m_logicalGPU,vbo,m_vboMem,0);
-	void* vram;
-	vkMapMemory(m_logicalGPU,m_vboMem,0,bufferInfo.size,0,&vram);
-	memcpy(vram,&vertices,bufferInfo.size);
-	vkUnmapMemory(m_logicalGPU,m_vboMem);
+	// vertex buffer
+	size_t bSize = sizeof(float)*15;
+	VkBuffer stgBuffer;VkDeviceMemory stgMem;
+	// !!write an in program fps counter and compare non copied vs high performance memory
+	init_buffer(bSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,stgMem,stgBuffer);
+	void* vram;vkMapMemory(m_logicalGPU,stgMem,0,bSize,0,&vram); // !!naming
+	memcpy(vram,&vertices,bSize); // ??adressor nessessary
+	vkUnmapMemory(m_logicalGPU,stgMem);
+	init_buffer(bSize,VK_BUFFER_USAGE_TRANSFER_DST_BIT|VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,m_vboMem,vbo);
+	// ??high performance memory vs non copied buffer ...research more details
+	cpy_buffer(stgBuffer,vbo,bSize); // !!i have a bad feeling about the performance here -Obi Wan
+	vkDestroyBuffer(m_logicalGPU,stgBuffer,nullptr);
+	vkFreeMemory(m_logicalGPU,stgMem,nullptr);
 
+	// command buffer
 	m_commandBuffers.resize(m_framebuffers.size());
 	VkCommandBufferAllocateInfo cBufferInfo{};
 	cBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -602,6 +594,7 @@ void Frame::setup(const char* title,int x,int y,int width,int height,SDL_WindowF
 	if (vkAllocateCommandBuffers(m_logicalGPU,&cBufferInfo,m_commandBuffers.data())!=VK_SUCCESS)
 		printf("command buffers broke\n");
 
+	// buffers
 	VkBuffer vbs[] = { vbo };
 	VkDeviceSize offsets[] = { 0 };
 	for (int i=0;i<m_commandBuffers.size();i++) {
@@ -728,5 +721,56 @@ VkShaderModule Frame::createShader(const std::vector<char> &source)
 	VkShaderModule out;
 	if (vkCreateShaderModule(m_logicalGPU,&shaderInfo,nullptr,&out)!=VK_SUCCESS) printf("shader broke\n");
 	return out;
+}
+// ??rewrite the parameters and also transfer from adress to return
+void Frame::init_buffer(size_t bSize,VkBufferUsageFlags uFlags,VkMemoryPropertyFlags pFlags,
+		VkDeviceMemory &bMemory,VkBuffer &buffer)
+{
+	VkBufferCreateInfo bInfo{};
+	bInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bInfo.size = bSize;
+	bInfo.usage = uFlags;
+	bInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	if (vkCreateBuffer(m_logicalGPU,&bInfo,nullptr,&buffer)!=VK_SUCCESS) printf("buffer creation broke\n");
+	VkMemoryRequirements memReq;
+	vkGetBufferMemoryRequirements(m_logicalGPU,buffer,&memReq);
+	VkMemoryAllocateInfo aInfo{};
+	aInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	aInfo.allocationSize = memReq.size;
+	VkPhysicalDeviceMemoryProperties memProp;
+	vkGetPhysicalDeviceMemoryProperties(m_gpu,&memProp);
+	uint32_t memType;for (int i=0;i<memProp.memoryTypeCount;i++) {
+		if (memReq.memoryTypeBits&(1<<i)
+			&&(memProp.memoryTypes[i].propertyFlags&pFlags)==pFlags) { memType=i;break; }
+	} aInfo.memoryTypeIndex = memType;
+	// !!!!!!!do not actually allocate memory for every single buffer wtf!!!!!!!
+	if (vkAllocateMemory(m_logicalGPU,&aInfo,nullptr,&bMemory)!=VK_SUCCESS) printf("buffer mem broke\n");
+	vkBindBufferMemory(m_logicalGPU,buffer,bMemory,0);
+}
+void Frame::cpy_buffer(VkBuffer src,VkBuffer dst,size_t size)
+{
+	VkCommandBufferAllocateInfo cbaInfo{};
+	cbaInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	cbaInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	cbaInfo.commandPool = m_commandPool;
+	cbaInfo.commandBufferCount = 1;
+	VkCommandBuffer cBuffer;
+	vkAllocateCommandBuffers(m_logicalGPU,&cbaInfo,&cBuffer);
+	VkCommandBufferBeginInfo bInfo{};
+	bInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	bInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; // §§very gentlemanlike code ...i know
+	vkBeginCommandBuffer(cBuffer,&bInfo);
+	VkBufferCopy bCopy{};
+	// !!make this dynamic later with parameters for srcOffset and dstOffset
+	bCopy.srcOffset = 0;bCopy.dstOffset = 0; // §§so that my future self has less trouble porting this
+	bCopy.size = size;
+	vkCmdCopyBuffer(cBuffer,src,dst,1,&bCopy);
+	vkEndCommandBuffer(cBuffer);
+	VkSubmitInfo sInfo{};
+	sInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	sInfo.commandBufferCount = 1;sInfo.pCommandBuffers = &cBuffer;
+	vkQueueSubmit(m_gpuQueue,1,&sInfo,VK_NULL_HANDLE);
+	vkQueueWaitIdle(m_gpuQueue); // !!shall be much more efficient in the future then this futile waiting call
+	vkFreeCommandBuffers(m_logicalGPU,m_commandPool,1,&cBuffer);
 }
 #endif
